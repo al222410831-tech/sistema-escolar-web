@@ -1,11 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for
 from pymongo import MongoClient
 import os
 
 app = Flask(__name__)
-app.secret_key = "siage_secret"
 
-# CONEXIÓN A TU MONGODB (Asegúrate de que los datos sean correctos)
+# TU CONEXIÓN A MONGODB
 MONGO_URI = "mongodb+srv://al222410831_db_user:Daniel123@cluster0.iuigysp.mongodb.net/proyecto2?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(MONGO_URI)
 db = client["proyecto2"]
@@ -32,30 +31,18 @@ def guardar_usuario():
     }
 
     if matricula.startswith("111"):
-        # Es Maestro: pedimos materias
         datos["rol"] = "maestro"
         datos["materia1"] = request.form.get("materia1")
         datos["materia2"] = request.form.get("materia2")
+        datos["semestre"] = request.form.get("semestre_maestro")
     elif matricula.startswith("222"):
-        # Es Alumno
         datos["rol"] = "alumno"
+        datos["semestre"] = request.form.get("semestre_alumno")
     else:
-        return "<h1>Error: La matrícula debe empezar con 111 o 222</h1><a href='/registro'>Volver</a>"
+        return "<h1>Matrícula inválida</h1><a href='/registro'>Volver</a>"
 
     usuarios_col.insert_one(datos)
-    return "<h1>✅ Registro exitoso en MongoDB</h1><a href='/'>Ir al Inicio</a>"
-
-@app.route("/validar", methods=["POST"])
-def validar():
-    matricula = request.form.get("usuario")
-    user = usuarios_col.find_one({"matricula": matricula})
-    
-    if user:
-        if matricula.startswith("111"):
-            return f"<h1>Bienvenido Maestro {user['nombre']}</h1><p>Tus clases: {user['materia1']} y {user['materia2']}</p>"
-        else:
-            return f"<h1>Bienvenido Alumno {user['nombre']}</h1>"
-    return "<h1>Usuario no encontrado</h1><a href='/'>Volver</a>"
+    return "<h1>✅ Registro exitoso en SIAGE</h1><a href='/'>Ir al Inicio</a>"
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

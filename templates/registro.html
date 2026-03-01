@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SIAGE - Registro</title>
+    <title>Registro SIAGE</title>
     <style>
         body { background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; width: 350px; box-shadow: 10px 10px 0px #333; }
-        input { display: block; width: 90%; padding: 10px; margin: 10px 0; border: 2px solid #333; }
-        #campos_maestro { display: none; background: #f0f0f0; padding: 10px; border-radius: 5px; }
-        button { background: #333; color: white; width: 100%; padding: 12px; border: none; cursor: pointer; font-weight: bold; }
+        .card { background: white; padding: 30px; border-radius: 15px; width: 380px; box-shadow: 10px 10px 0px #333; }
+        input { display: block; width: 95%; padding: 10px; margin: 10px 0; border: 2px solid #333; }
+        .seccion { display: none; background: #eee; padding: 10px; margin-top: 5px; border-radius: 5px; }
+        button { background: #333; color: white; width: 100%; padding: 15px; border: none; font-weight: bold; cursor: pointer; }
     </style>
     <script>
-        function checkMatricula() {
-            let matricula = document.getElementById('mat').value;
-            let campos = document.getElementById('campos_maestro');
-            campos.style.display = matricula.startsWith('111') ? 'block' : 'none';
+        function ajustar() {
+            let m = document.getElementById('mat').value;
+            document.getElementById('sec_m').style.display = m.startsWith('111') ? 'block' : 'none';
+            document.getElementById('sec_a').style.display = m.startsWith('222') ? 'block' : 'none';
         }
     </script>
 </head>
 <body>
     <div class="card">
-        <h2>📝 Registro SIAGE</h2>
+        <h3>REGISTRO SIAGE</h3>
         <form action="/guardar_usuario" method="POST">
-            <input type="text" id="mat" name="matricula" placeholder="Matrícula (111 o 222)" onkeyup="checkMatricula()" required>
+            <input type="text" id="mat" name="matricula" placeholder="Matrícula" onkeyup="ajustar()" required>
             <input type="text" name="nombre" placeholder="Nombre Completo" required>
             <input type="password" name="password" placeholder="Contraseña" required>
             
-            <div id="campos_maestro">
-                <p><small>Datos de Maestro:</small></p>
+            <div id="sec_m" class="seccion">
                 <input type="text" name="materia1" placeholder="Materia 1">
                 <input type="text" name="materia2" placeholder="Materia 2">
+                <input type="text" name="semestre_maestro" placeholder="Semestre que imparte">
             </div>
-            
-            <button type="submit">REGISTRAR EN MONGO</button>
+
+            <div id="sec_a" class="seccion">
+                <input type="text" name="semestre_alumno" placeholder="Semestre que cursa">
+            </div>
+
+            <button type="submit">GUARDAR REGISTRO</button>
         </form>
     </div>
 </body>
