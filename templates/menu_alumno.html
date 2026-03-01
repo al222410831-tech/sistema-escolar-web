@@ -1,0 +1,13 @@
+<body style="background-color: #b36b2d; font-family: sans-serif; text-align: center; color: white; padding-top: 50px;">
+    <h1>🎓 PORTAL DE ALUMNO - SIAGE</h1>
+    <div style="background: white; color: black; padding: 30px; display: inline-block; border-radius: 15px; box-shadow: 10px 10px 0px #333;">
+        <h2>Hola, {{ user.nombre }}</h2>
+        <p><strong>Tu Matrícula:</strong> {{ user.matricula }}</p>
+        <p><strong>Semestre actual:</strong> {{ user.semestre }}</p>
+        <hr>
+        <button style="width: 100%; padding: 10px; margin-bottom: 5px;">VER MIS CALIFICACIONES</button>
+        <button style="width: 100%; padding: 10px; margin-bottom: 5px;">HORARIO DE CLASES</button>
+        <br><br>
+        <a href="/" style="color: red; font-weight: bold;">CERRAR SESIÓN</a>
+    </div>
+</body>

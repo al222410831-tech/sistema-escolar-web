@@ -1,21 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login - SIAGE</title>
-    <style>
-        body { background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; padding-top: 100px; }
-        .card { background: white; padding: 20px; border-radius: 10px; text-align: center; }
-        input { display: block; margin: 10px auto; padding: 10px; }
-        button { background: #333; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h2>Introduce tu Matrícula</h2>
+<body style="background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+    <div style="background: white; padding: 40px; border-radius: 15px; border: 3px solid #333; text-align: center; box-shadow: 10px 10px 0px #333;">
+        <h2>🔑 ACCESO AL SIAGE</h2>
         <form action="/validar" method="POST">
-            <input type="text" name="usuario" placeholder="Ej: 111... o 222..." required>
-            <button type="submit">Entrar al Sistema</button>
+            <input type="text" name="usuario" placeholder="Matrícula" style="display:block; width:100%; padding:10px; margin-bottom:10px;" required>
+            <input type="password" name="password" placeholder="Contraseña" style="display:block; width:100%; padding:10px; margin-bottom:20px;" required>
+            <button type="submit" style="background:#333; color:white; width:100%; padding:10px; border:none; cursor:pointer; font-weight:bold;">ENTRAR</button>
         </form>
+        <br>
+        <a href="/">Volver al Inicio</a>
     </div>
 </body>
-</html>

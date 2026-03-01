@@ -1,0 +1,13 @@
+<body style="background-color: #b36b2d; font-family: sans-serif; text-align: center; color: white; padding-top: 50px;">
+    <h1>👨‍🏫 PANEL DE MAESTRO - SIAGE</h1>
+    <div style="background: white; color: black; padding: 30px; display: inline-block; border-radius: 15px; box-shadow: 10px 10px 0px #333;">
+        <h2>Bienvenido, {{ user.nombre }}</h2>
+        <p><strong>Materias a cargo:</strong> {{ user.materia1 }} y {{ user.materia2 }}</p>
+        <p><strong>Semestre:</strong> {{ user.semestre }}</p>
+        <hr>
+        <button style="width: 100%; padding: 10px; margin-bottom: 5px;">LISTA DE ALUMNOS</button>
+        <button style="width: 100%; padding: 10px; margin-bottom: 5px;">SUBIR CALIFICACIONES</button>
+        <br><br>
+        <a href="/" style="color: red; font-weight: bold;">CERRAR SESIÓN</a>
+    </div>
+</body>
