@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# TU CONEXIÓN A MONGODB
+# CONFIGURACIÓN DE MONGODB
 MONGO_URI = "mongodb+srv://al222410831_db_user:Daniel123@cluster0.iuigysp.mongodb.net/proyecto2?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(MONGO_URI)
 db = client["proyecto2"]
@@ -44,6 +44,8 @@ def guardar_usuario():
     usuarios_col.insert_one(datos)
     return "<h1>✅ Registro exitoso en SIAGE</h1><a href='/'>Ir al Inicio</a>"
 
+# ESTA ES LA PARTE MÁS IMPORTANTE PARA RENDER
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    # Escuchamos en el puerto que Render nos asigne o en el 10000 por defecto
+    port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
