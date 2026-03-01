@@ -1,39 +1,34 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from pymongo import MongoClient
+from flask import Flask, render_template, request, redirect, url_for
 import os
 
 app = Flask(__name__)
-app.secret_key = "clave_secreta_daniel" # Necesario para mostrar mensajes de error
-
-# TU CONEXIÓN
-MONGO_URI = "mongodb+srv://al222410831_db_user:Daniel123@cluster0.iuigysp.mongodb.net/proyecto2?retryWrites=true&w=majority&appName=Cluster0"
-client = MongoClient(MONGO_URI)
-db = client["proyecto2"]
-coleccion = db["usuarios"]
 
 @app.route("/")
-def login():
+def index():
+    # Esta es la pantalla principal igual a tu captura
+    return render_template("index.html")
+
+@app.route("/login")
+def login_page():
     return render_template("login.html")
 
 @app.route("/validar", methods=["POST"])
 def validar():
     usuario = request.form.get("usuario")
-    
     if usuario.startswith("111"):
         return redirect(url_for("menu_maestro"))
     elif usuario.startswith("222"):
         return redirect(url_for("menu_alumno"))
     else:
-        # Si no empieza con esos números, regresa al login con error
-        return "<h1>Error: Prefijo no válido. Usa 111 o 222</h1><a href='/'>Volver</a>"
+        return "<h1>Error: Prefijo no válido (Usa 111 o 222)</h1><a href='/login'>Volver</a>"
 
 @app.route("/maestro")
 def menu_maestro():
-    return "<h1>👨‍🏫 Menú de Maestro</h1><p>Bienvenido, tienes acceso total.</p><a href='/'>Cerrar Sesión</a>"
+    return render_template("menu_maestro.html")
 
 @app.route("/alumno")
 def menu_alumno():
-    return "<h1>🎓 Menú de Alumno</h1><p>Bienvenido, aquí puedes ver tus notas.</p><a href='/'>Cerrar Sesión</a>"
+    return render_template("menu_alumno.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
