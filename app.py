@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# CONEXIÓN A MONGODB
+# CONEXIÓN A TU CLUSTER0 DE MONGODB
 MONGO_URI = "mongodb+srv://al222410831_db_user:Daniel123@cluster0.iuigysp.mongodb.net/proyecto2?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(MONGO_URI)
 db = client["proyecto2"]
@@ -26,17 +26,14 @@ def registro_page():
 def validar():
     matricula = request.form.get("usuario")
     password = request.form.get("password")
+    user = usuarios_col.find_one({"matricula": matricula, "password": password})
     
-    # Buscamos al usuario en la base de datos
-    user = usuarios_col.find_one({"matricula": matricula})
-    
-    if user and user.get("password") == password:
+    if user:
         if user.get("rol") == "maestro":
             return render_template("menu_maestro.html", user=user)
         else:
             return render_template("menu_alumno.html", user=user)
-    else:
-        return "<h1>❌ Matrícula o contraseña incorrecta</h1><a href='/login'>Volver</a>"
+    return "<h1>❌ Error: Matrícula o contraseña incorrecta</h1><a href='/login'>Volver</a>"
 
 @app.route("/guardar_usuario", methods=["POST"])
 def guardar_usuario():
@@ -47,13 +44,27 @@ def guardar_usuario():
     datos = {"matricula": matricula, "nombre": nombre, "password": password}
 
     if matricula.startswith("111"):
-        datos.update({"rol": "maestro", "materia1": request.form.get("materia1"), 
-                      "materia2": request.form.get("materia2"), "semestre": request.form.get("semestre_maestro")})
+        datos.update({
+            "rol": "maestro", 
+            "materia1": request.form.get("materia1"), 
+            "materia2": request.form.get("materia2"), 
+            "semestre": request.form.get("semestre_maestro")
+        })
     elif matricula.startswith("222"):
-        datos.update({"rol": "alumno", "semestre": request.form.get("semestre_alumno")})
+        datos.update({
+            "rol": "alumno", 
+            "semestre": request.form.get("semestre_alumno")
+        })
+    else:
+        return "<h1>⚠️ Matrícula no válida</h1><a href='/registro'>Volver</a>"
     
     usuarios_col.insert_one(datos)
-    return "<h1>✅ Registro exitoso</h1><a href='/login'>Ir al Login</a>"
+    return "<h1>✅ Registro exitoso en SIAGE</h1><a href='/login'>Ir al Login</a>"
+
+@app.route("/eliminar_cuenta/<matricula>")
+def eliminar_cuenta(matricula):
+    usuarios_col.delete_one({"matricula": matricula})
+    return "<h1>🗑️ Cuenta eliminada correctamente</h1><a href='/'>Volver al Inicio</a>"
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))

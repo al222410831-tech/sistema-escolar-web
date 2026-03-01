@@ -1,50 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SIAGE - Registro</title>
+    <title>Registro - SIAGE</title>
     <style>
-        body { background-color: #b36b2d; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; width: 400px; box-shadow: 10px 10px 0px #333; border: 2px solid #333; text-align: center; }
-        h2 { color: #333; margin-bottom: 20px; text-transform: uppercase; font-size: 18px; }
-        input, select { display: block; width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #333; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+        body { background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; width: 400px; box-shadow: 10px 10px 0px #333; text-align: center; border: 2px solid #333; }
+        input, select { display: block; width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #333; border-radius: 5px; box-sizing: border-box; }
         .seccion { display: none; background: #f0f0f0; padding: 15px; border-radius: 10px; margin-top: 10px; border: 1px dashed #333; }
-        button { background-color: #333; color: white; border: none; padding: 15px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 15px; }
-        button:hover { background-color: #555; }
+        button { background: #333; color: white; border: none; padding: 15px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 15px; }
     </style>
     <script>
-        function ajustarCampos() {
+        function ajustar() {
             let m = document.getElementById('mat').value;
-            let secM = document.getElementById('sec_maestro');
-            let secA = document.getElementById('sec_alumno');
-            
-            // Si empieza con 111 muestra sección maestro
-            if (m.startsWith('111')) {
-                secM.style.display = 'block';
-                secA.style.display = 'none';
-            } 
-            // Si empieza con 222 muestra sección alumno
-            else if (m.startsWith('222')) {
-                secM.style.display = 'none';
-                secA.style.display = 'block';
-            } else {
-                secM.style.display = 'none';
-                secA.style.display = 'none';
-            }
+            document.getElementById('sec_m').style.display = m.startsWith('111') ? 'block' : 'none';
+            document.getElementById('sec_a').style.display = m.startsWith('222') ? 'block' : 'none';
         }
     </script>
 </head>
 <body>
     <div class="card">
-        <h2>SISTEMA INTEGRAL DE ADMINISTRACIÓN Y GESTIÓN EDUCATIVA</h2>
+        <h3>REGISTRO SIAGE</h3>
         <form action="/guardar_usuario" method="POST">
-            <input type="text" id="mat" name="matricula" placeholder="Matrícula (111 o 222)" onkeyup="ajustarCampos()" required>
+            <input type="text" id="mat" name="matricula" placeholder="Matrícula (111 o 222)" onkeyup="ajustar()" required>
             <input type="text" name="nombre" placeholder="Nombre Completo" required>
-            <input type="password" name="password" placeholder="Crea una Contraseña" required>
+            <input type="password" name="password" placeholder="Contraseña" required>
 
-            <div id="sec_maestro" class="seccion">
+            <div id="sec_m" class="seccion">
                 <input type="text" name="materia1" placeholder="Materia 1">
                 <input type="text" name="materia2" placeholder="Materia 2">
-                <label>Semestre a impartir:</label>
+                <label>Semestre que imparte:</label>
                 <select name="semestre_maestro">
                     <option value="PRIMER CUATRIMESTRE">PRIMER CUATRIMESTRE</option>
                     <option value="SEGUNDO CUATRIMESTRE">SEGUNDO CUATRIMESTRE</option>
@@ -52,17 +36,11 @@
                     <option value="CUARTO CUATRIMESTRE">CUARTO CUATRIMESTRE</option>
                     <option value="QUINTO CUATRIMESTRE">QUINTO CUATRIMESTRE</option>
                     <option value="SEXTO CUATRIMESTRE">SEXTO CUATRIMESTRE</option>
-                    <option value="SÉPTIMO CUATRIMESTRE">SÉPTIMO CUATRIMESTRE</option>
-                    <option value="OCTAVO CUATRIMESTRE">OCTAVO CUATRIMESTRE</option>
-                    <option value="NOVENO CUATRIMESTRE">NOVENO CUATRIMESTRE</option>
-                    <option value="DÉCIMO CUATRIMESTRE">DÉCIMO CUATRIMESTRE</option>
-                    <option value="ONCEAVO CUATRIMESTRE">ONCEAVO CUATRIMESTRE</option>
-                    <option value="DOCEAVO CUATRIMESTRE">DOCEAVO CUATRIMESTRE</option>
                 </select>
             </div>
 
-            <div id="sec_alumno" class="seccion">
-                <label>Cuatrimestre actual:</label>
+            <div id="sec_a" class="seccion">
+                <label>Semestre que cursa:</label>
                 <select name="semestre_alumno">
                     <option value="PRIMER CUATRIMESTRE">PRIMER CUATRIMESTRE</option>
                     <option value="SEGUNDO CUATRIMESTRE">SEGUNDO CUATRIMESTRE</option>
@@ -70,19 +48,10 @@
                     <option value="CUARTO CUATRIMESTRE">CUARTO CUATRIMESTRE</option>
                     <option value="QUINTO CUATRIMESTRE">QUINTO CUATRIMESTRE</option>
                     <option value="SEXTO CUATRIMESTRE">SEXTO CUATRIMESTRE</option>
-                    <option value="SÉPTIMO CUATRIMESTRE">SÉPTIMO CUATRIMESTRE</option>
-                    <option value="OCTAVO CUATRIMESTRE">OCTAVO CUATRIMESTRE</option>
-                    <option value="NOVENO CUATRIMESTRE">NOVENO CUATRIMESTRE</option>
-                    <option value="DÉCIMO CUATRIMESTRE">DÉCIMO CUATRIMESTRE</option>
-                    <option value="ONCEAVO CUATRIMESTRE">ONCEAVO CUATRIMESTRE</option>
-                    <option value="DOCEAVO CUATRIMESTRE">DOCEAVO CUATRIMESTRE</option>
                 </select>
             </div>
-
             <button type="submit">REGISTRAR USUARIO</button>
         </form>
-        <br>
-        <a href="/" style="text-decoration: none; color: #333; font-size: 12px;">← Volver al Inicio</a>
     </div>
 </body>
 </html>

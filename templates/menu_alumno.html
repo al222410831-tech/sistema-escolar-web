@@ -1,13 +1,21 @@
-<body style="background-color: #b36b2d; font-family: sans-serif; text-align: center; color: white; padding-top: 50px;">
-    <h1>🎓 PORTAL DE ALUMNO - SIAGE</h1>
-    <div style="background: white; color: black; padding: 30px; display: inline-block; border-radius: 15px; box-shadow: 10px 10px 0px #333;">
-        <h2>Hola, {{ user.nombre }}</h2>
-        <p><strong>Tu Matrícula:</strong> {{ user.matricula }}</p>
-        <p><strong>Semestre actual:</strong> {{ user.semestre }}</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portal Alumno - SIAGE</title>
+</head>
+<body style="background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;">
+    <div style="background: white; padding: 40px; border-radius: 15px; width: 400px; box-shadow: 10px 10px 0px #333; text-align: center; border: 2px solid #333;">
+        <h2 style="color: #333;">🎓 PORTAL DEL ESTUDIANTE</h2>
         <hr>
-        <button style="width: 100%; padding: 10px; margin-bottom: 5px;">VER MIS CALIFICACIONES</button>
-        <button style="width: 100%; padding: 10px; margin-bottom: 5px;">HORARIO DE CLASES</button>
-        <br><br>
-        <a href="/" style="color: red; font-weight: bold;">CERRAR SESIÓN</a>
+        <p><strong>Hola:</strong> {{ user.nombre }}</p>
+        <p><strong>Matrícula:</strong> {{ user.matricula }}</p>
+        <p><strong>Tu Cuatrimestre:</strong> {{ user.semestre }}</p>
+        <hr>
+        <a href="/eliminar_cuenta/{{ user.matricula }}" onclick="return confirm('¿Estás seguro de que quieres darte de baja?')" 
+           style="background: #ff4d4d; color: white; padding: 12px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; margin-bottom: 10px;">
+           ELIMINAR MI CUENTA
+        </a>
+        <a href="/" style="color: #333; font-weight: bold; text-decoration: none;">Cerrar Sesión</a>
     </div>
 </body>
+</html>
