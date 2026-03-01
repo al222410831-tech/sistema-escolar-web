@@ -1,0 +1,29 @@
+<body style="background-color: #b36b2d; font-family: sans-serif; color: white; padding: 20px;">
+    <h1>📋 LISTADO CLASIFICADO POR CUATRIMESTRE</h1>
+    
+    {% set periodos = ["PRIMER CUATRIMESTRE", "SEGUNDO CUATRIMESTRE", "TERCER CUATRIMESTRE", "CUARTO CUATRIMESTRE", "QUINTO CUATRIMESTRE", "SEXTO CUATRIMESTRE", "SÉPTIMO CUATRIMESTRE", "OCTAVO CUATRIMESTRE", "NOVENO CUATRIMESTRE", "DÉCIMO CUATRIMESTRE", "ONCEAVO CUATRIMESTRE", "DOCEAVO CUATRIMESTRE"] %}
+
+    {% for periodo in periodos %}
+        <div style="background: rgba(0,0,0,0.3); padding: 10px; margin-bottom: 20px; border-radius: 10px;">
+            <h2 style="border-bottom: 2px solid white;">{{ periodo }}</h2>
+            <table border="1" style="background: white; color: black; width: 100%; border-collapse: collapse;">
+                <tr style="background: #333; color: white;">
+                    <th>Matrícula</th>
+                    <th>Nombre</th>
+                    <th>Rol</th>
+                </tr>
+                {% for u in usuarios %}
+                    {% if u.semestre == periodo %}
+                    <tr>
+                        <td>{{ u.matricula }}</td>
+                        <td>{{ u.nombre }}</td>
+                        <td>{{ u.rol | upper }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        </div>
+    {% endfor %}
+
+    <a href="/" style="color: yellow; font-weight: bold;">Volver al Inicio</a>
+</body>
