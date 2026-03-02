@@ -1,21 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Panel Maestro - SIAGE</title>
+    <title>Maestro - SIAGE</title>
+    <style>
+        body { background-color: #b36b2d; font-family: sans-serif; margin: 0; padding: 20px; color: white; }
+        .container { background: white; color: #333; padding: 20px; border-radius: 15px; border: 3px solid #333; max-width: 900px; margin: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: center; }
+        th { background: #333; color: white; }
+        input[type="text"], input[type="number"] { width: 80%; padding: 5px; }
+        .btn-save { background: green; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+    </style>
 </head>
-<body style="background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;">
-    <div style="background: white; padding: 40px; border-radius: 15px; width: 400px; box-shadow: 10px 10px 0px #333; text-align: center; border: 2px solid #333;">
-        <h2 style="color: #333;">👨‍🏫 PANEL DE MAESTRO</h2>
-        <hr>
-        <p><strong>Bienvenido:</strong> {{ user.nombre }}</p>
+<body>
+    <div class="container">
+        <h2>👨‍🏫 Panel del Maestro: {{ user.nombre }}</h2>
+        <p><strong>Cuatrimestre a cargo:</strong> {{ user.semestre }}</p>
         <p><strong>Materias:</strong> {{ user.materia1 }} / {{ user.materia2 }}</p>
-        <p><strong>Cuatrimestre:</strong> {{ user.semestre }}</p>
         <hr>
-        <a href="/eliminar_cuenta/{{ user.matricula }}" onclick="return confirm('¿Seguro que quieres eliminar tu cuenta de maestro?')" 
-           style="background: #ff4d4d; color: white; padding: 12px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; margin-bottom: 10px;">
-           ELIMINAR MI CUENTA
-        </a>
-        <a href="/" style="color: #333; font-weight: bold; text-decoration: none;">Cerrar Sesión</a>
+        
+        <h3>👥 LISTA DE ALUMNOS ({{ user.semestre }})</h3>
+        <table>
+            <tr>
+                <th>Nombre</th>
+                <th>Matrícula</th>
+                <th>Calificación</th>
+                <th>Reporte / Observación</th>
+                <th>Acción</th>
+            </tr>
+            {% for al en alumnos %}
+            <form action="/guardar_nota" method="POST">
+                <tr>
+                    <td>{{ al.nombre }}</td>
+                    <td><input type="hidden" name="matricula" value="{{ al.matricula }}">{{ al.matricula }}</td>
+                    <td><input type="number" name="calificacion" value="{{ al.calificacion }}" placeholder="0-10" min="0" max="10"></td>
+                    <td><input type="text" name="reporte" value="{{ al.reporte }}" placeholder="Escribe reporte..."></td>
+                    <td><button type="submit" class="btn-save">Guardar</button></td>
+                </tr>
+            </form>
+            {% endfor %}
+        </table>
+
+        <br>
+        <a href="/eliminar_cuenta/{{ user.matricula }}" onclick="return confirm('¿Borrar tu cuenta?')" style="color: red; font-size: 12px;">Eliminar mi cuenta de maestro</a>
+        <br><br>
+        <a href="/" style="text-decoration: none; font-weight: bold; color: #333;">← Cerrar Sesión</a>
     </div>
 </body>
 </html>
