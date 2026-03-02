@@ -3,87 +3,64 @@
 <head>
     <title>Maestro SIAGE</title>
     <style>
-        body { background-color: #b36b2d; font-family: sans-serif; padding: 20px; color: #333; }
-        .card { background: white; padding: 25px; border-radius: 15px; border: 3px solid #333; max-width: 1000px; margin: auto; }
-        .nav-btns { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
-        .nav-btns button { padding: 10px 20px; cursor: pointer; font-weight: bold; background: #333; color: white; border: none; border-radius: 5px; }
+        body { background-color: #b36b2d; font-family: sans-serif; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 15px; border: 3px solid #333; max-width: 1100px; margin: auto; text-align: center; }
+        select, button { padding: 10px; margin: 10px; border: 2px solid #333; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #333; padding: 8px; font-size: 13px; }
         .seccion { display: none; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #333; padding: 8px; text-align: center; }
-        th { background: #eee; }
-        input[type="number"] { width: 50px; }
         .visible { display: block; }
     </style>
     <script>
-        function mostrar(id) {
-            document.querySelectorAll('.seccion').forEach(s => s.classList.remove('visible'));
-            document.getElementById(id).classList.add('visible');
+        function seleccionarMateria() {
+            let mat = document.getElementById('materia_select').value;
+            document.getElementById('tabla_alumnos').classList.add('visible');
+            document.querySelectorAll('.label_materia').forEach(el => el.innerText = mat);
+            document.querySelectorAll('.input_materia').forEach(el => el.value = mat);
         }
     </script>
 </head>
 <body>
     <div class="card">
         <h2>👨‍🏫 Panel del Maestro: {{ user.nombre }}</h2>
-        <p>Grupo: <strong>{{ user.semestre }}</strong></p>
+        <p>Gestionando grupo: <strong>{{ user.semestre }}</strong></p>
+        <hr>
         
-        <div class="nav-btns">
-            <button onclick="mostrar('lista')">VER LISTA</button>
-            <button onclick="mostrar('notas')">SUBIR CALIFICACIONES</button>
-            <button onclick="mostrar('reportes')">SUBIR REPORTES</button>
-        </div>
+        <h3>¿Qué materia desea calificar hoy?</h3>
+        <select id="materia_select">
+            <option value="{{ user.materia1 }}">{{ user.materia1 }}</option>
+            <option value="{{ user.materia2 }}">{{ user.materia2 }}</option>
+        </select>
+        <button onclick="seleccionarMateria()" style="background: #333; color: white;">CARGAR GRUPO</button>
 
-        <div id="lista" class="seccion visible">
-            <h3>👥 Lista de Alumnos</h3>
+        <div id="tabla_alumnos" class="seccion">
+            <h3 style="color: blue;">Cargando: <span class="label_materia"></span></h3>
             <table>
-                <tr><th>Nombre</th><th>Matrícula</th><th>Promedio Actual</th></tr>
+                <tr style="background: #eee;">
+                    <th>Alumno</th>
+                    <th>N1</th><th>N2</th><th>N3</th><th>N4</th>
+                    <th>Reporte</th>
+                    <th>Acción</th>
+                </tr>
                 {% for al in alumnos %}
-                <tr><td>{{ al.nombre }}</td><td>{{ al.matricula }}</td><td>{{ al.promedio if al.promedio else 'N/A' }}</td></tr>
-                {% endfor %}
-            </table>
-        </div>
-
-        <div id="notas" class="seccion">
-            <h3>📝 Asignar Calificaciones (4 Notas)</h3>
-            <table>
-                <tr><th>Nombre</th><th>N1</th><th>N2</th><th>N3</th><th>N4</th><th>Acción</th></tr>
-                {% for al in alumnos %}
-                <form action="/guardar_datos_alumno" method="POST">
+                <form action="/guardar_materia" method="POST">
                     <input type="hidden" name="matricula" value="{{ al.matricula }}">
-                    <input type="hidden" name="reporte" value="{{ al.reporte }}">
+                    <input type="hidden" name="materia_nombre" class="input_materia">
                     <tr>
                         <td>{{ al.nombre }}</td>
-                        <td><input type="number" name="n1" value="{{ al.n1 or 0 }}" step="0.1" min="0" max="10"></td>
-                        <td><input type="number" name="n2" value="{{ al.n2 or 0 }}" step="0.1" min="0" max="10"></td>
-                        <td><input type="number" name="n3" value="{{ al.n3 or 0 }}" step="0.1" min="0" max="10"></td>
-                        <td><input type="number" name="n4" value="{{ al.n4 or 0 }}" step="0.1" min="0" max="10"></td>
-                        <td><button type="submit">Guardar Promedio</button></td>
+                        <td><input type="number" name="n1" step="0.1" style="width:40px"></td>
+                        <td><input type="number" name="n2" step="0.1" style="width:40px"></td>
+                        <td><input type="number" name="n3" step="0.1" style="width:40px"></td>
+                        <td><input type="number" name="n4" step="0.1" style="width:40px"></td>
+                        <td><input type="text" name="reporte" placeholder="Conducta..."></td>
+                        <td><button type="submit" style="background: green; color: white; border: none; padding: 5px 10px; cursor: pointer;">Guardar</button></td>
                     </tr>
                 </form>
                 {% endfor %}
             </table>
         </div>
-
-        <div id="reportes" class="seccion">
-            <h3>⚠️ Asignar Reportes</h3>
-            <table>
-                <tr><th>Nombre</th><th>Reporte / Observación</th><th>Acción</th></tr>
-                {% for al in alumnos %}
-                <form action="/guardar_datos_alumno" method="POST">
-                    <input type="hidden" name="matricula" value="{{ al.matricula }}">
-                    <input type="hidden" name="n1" value="{{ al.n1 or 0 }}"><input type="hidden" name="n2" value="{{ al.n2 or 0 }}">
-                    <input type="hidden" name="n3" value="{{ al.n3 or 0 }}"><input type="hidden" name="n4" value="{{ al.n4 or 0 }}">
-                    <tr>
-                        <td>{{ al.nombre }}</td>
-                        <td><input type="text" name="reporte" value="{{ al.reporte }}" style="width: 90%;"></td>
-                        <td><button type="submit">Subir</button></td>
-                    </tr>
-                </form>
-                {% endfor %}
-            </table>
-        </div>
-
         <br><br>
-        <a href="/" style="color: red; font-weight: bold;">Cerrar Sesión</a>
+        <a href="/" style="color: red; font-weight: bold; text-decoration: none;">Cerrar Sesión</a>
     </div>
 </body>
 </html>

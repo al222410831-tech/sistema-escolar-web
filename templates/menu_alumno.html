@@ -1,15 +1,31 @@
-<body style="background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;">
-    <div style="background: white; padding: 40px; border-radius: 15px; width: 450px; box-shadow: 10px 10px 0px #333; text-align: center; border: 2px solid #333;">
-        <h2 style="color: #333;">🎓 MI BOLETA SIAGE</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Alumno SIAGE</title>
+</head>
+<body style="background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px;">
+    <div style="background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 500px; border: 3px solid #333; text-align: center;">
+        <h2 style="color: #333;">🎓 BOLETA DE CALIFICACIONES</h2>
         <hr>
         <p><strong>Estudiante:</strong> {{ user.nombre }}</p>
-        <div style="background: #f9f9f9; padding: 15px; border: 1px solid #333; text-align: left;">
-            <p>Nota 1: {{ user.n1 or 0 }} | Nota 2: {{ user.n2 or 0 }}</p>
-            <p>Nota 3: {{ user.n3 or 0 }} | Nota 4: {{ user.n4 or 0 }}</p>
-            <p style="font-size: 20px; border-top: 1px solid #333;"><strong>PROMEDIO FINAL: {{ user.promedio or 0 }}</strong></p>
+        <p><strong>Cuatrimestre:</strong> {{ user.semestre }}</p>
+        
+        <div style="text-align: left; margin-top: 20px;">
+            {% if user.materias %}
+                {% for clave, datos in user.materias.items() %}
+                <div style="background: #f0f0f0; padding: 10px; border: 1px solid #333; margin-bottom: 10px; border-radius: 5px;">
+                    <p style="margin: 0;"><strong>MATERIA: {{ datos.nombre }}</strong></p>
+                    <p style="margin: 5px 0; font-size: 18px; color: blue;">PROMEDIO: {{ datos.promedio }}</p>
+                    <p style="margin: 0; font-size: 12px; color: #555;">Notas: {{ datos.n1 }}, {{ datos.n2 }}, {{ datos.n3 }}, {{ datos.n4 }}</p>
+                    <p style="margin: 5px 0; font-size: 12px; color: red;">Reporte: {{ datos.reporte or 'Sin reportes' }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; color: #666;">Aún no tienes calificaciones cargadas.</p>
+            {% endif %}
         </div>
-        <p style="color: red;"><strong>REPORTE:</strong> {{ user.reporte or 'Sin reportes' }}</p>
-        <hr>
-        <a href="/" style="color: #333; text-decoration: none; font-weight: bold;">Cerrar Sesión</a>
+        <br>
+        <a href="/" style="color: #333; font-weight: bold; text-decoration: none;">SALIR</a>
     </div>
 </body>
+</html>

@@ -36,33 +36,46 @@ def validar():
             return render_template("menu_alumno.html", user=user)
     return "<h1>❌ Datos incorrectos</h1><a href='/login'>Volver</a>"
 
-@app.route("/guardar_datos_alumno", methods=["POST"])
-def guardar_datos_alumno():
+@app.route("/guardar_materia", methods=["POST"])
+def guardar_materia():
     matricula = request.form.get("matricula")
-    # Recibimos las 4 notas
+    materia = request.form.get("materia_nombre")
     n1 = float(request.form.get("n1", 0))
     n2 = float(request.form.get("n2", 0))
     n3 = float(request.form.get("n3", 0))
     n4 = float(request.form.get("n4", 0))
     reporte = request.form.get("reporte", "")
-    
-    # Calculamos el promedio
     promedio = (n1 + n2 + n3 + n4) / 4
+
+    # Guardamos los datos en un "diccionario" dentro del alumno usando el nombre de la materia
+    # Reemplazamos espacios por guiones para que MongoDB no se confunda
+    nombre_clave = materia.replace(" ", "_")
     
     usuarios_col.update_one(
         {"matricula": matricula},
         {"$set": {
-            "n1": n1, "n2": n2, "n3": n3, "n4": n4, 
-            "promedio": round(promedio, 2), 
-            "reporte": reporte
+            f"materias.{nombre_clave}": {
+                "nombre": materia,
+                "n1": n1, "n2": n2, "n3": n3, "n4": n4,
+                "promedio": round(promedio, 2),
+                "reporte": reporte
+            }
         }}
     )
-    return "<h1>✅ Datos actualizados</h1><a href='/'>Regresar al inicio</a>"
+    return f"<h1>✅ Guardado en {materia}</h1><a href='/'>Volver</a>"
 
-@app.route("/eliminar_cuenta/<matricula>")
-def eliminar_cuenta(matricula):
-    usuarios_col.delete_one({"matricula": matricula})
-    return "<h1>🗑️ Cuenta eliminada</h1><a href='/'>Inicio</a>"
+@app.route("/guardar_usuario", methods=["POST"])
+def guardar_usuario():
+    matricula = request.form.get("matricula")
+    nombre = request.form.get("nombre")
+    password = request.form.get("password")
+    datos = {"matricula": matricula, "nombre": nombre, "password": password, "materias": {}}
+    if matricula.startswith("111"):
+        datos.update({"rol": "maestro", "materia1": request.form.get("materia1"), "materia2": request.form.get("materia2"), "semestre": request.form.get("semestre_maestro")})
+    elif matricula.startswith("222"):
+        datos.update({"rol": "alumno", "semestre": request.form.get("semestre_alumno")})
+    usuarios_col.insert_one(datos)
+    return "<h1>✅ Registro exitoso</h1><a href='/login'>Ir al Login</a>"
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
