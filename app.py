@@ -46,11 +46,8 @@ def guardar_materia():
     n4 = float(request.form.get("n4", 0))
     reporte = request.form.get("reporte", "")
     promedio = (n1 + n2 + n3 + n4) / 4
-
-    # Guardamos los datos en un "diccionario" dentro del alumno usando el nombre de la materia
-    # Reemplazamos espacios por guiones para que MongoDB no se confunda
-    nombre_clave = materia.replace(" ", "_")
     
+    nombre_clave = materia.replace(" ", "_")
     usuarios_col.update_one(
         {"matricula": matricula},
         {"$set": {
@@ -62,14 +59,15 @@ def guardar_materia():
             }
         }}
     )
-    return f"<h1>✅ Guardado en {materia}</h1><a href='/'>Volver</a>"
+    return f"<h1>✅ Guardado correctamente</h1><a href='/'>Volver</a>"
 
 @app.route("/guardar_usuario", methods=["POST"])
 def guardar_usuario():
     matricula = request.form.get("matricula")
     nombre = request.form.get("nombre")
     password = request.form.get("password")
-    datos = {"matricula": matricula, "nombre": nombre, "password": password, "materias": {}}
+    # Inicializamos con horario vacío
+    datos = {"matricula": matricula, "nombre": nombre, "password": password, "materias": {}, "horario": "Horario no asignado todavía."}
     if matricula.startswith("111"):
         datos.update({"rol": "maestro", "materia1": request.form.get("materia1"), "materia2": request.form.get("materia2"), "semestre": request.form.get("semestre_maestro")})
     elif matricula.startswith("222"):

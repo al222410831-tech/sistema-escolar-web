@@ -1,31 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Alumno SIAGE</title>
+    <title>Portal de Alumno SIAGE</title>
+    <style>
+        body { background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 500px; border: 3px solid #333; text-align: center; box-shadow: 10px 10px 0px #333; }
+        .btn-menu { background: #333; color: white; padding: 12px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-menu:hover { background: #555; }
+        .seccion { display: none; margin-top: 20px; text-align: left; background: #f9f9f9; padding: 15px; border: 1px solid #333; border-radius: 8px; }
+        .visible { display: block; }
+        hr { border: 1px solid #333; }
+    </style>
+    <script>
+        function mostrarSeccion(id) {
+            document.querySelectorAll('.seccion').forEach(s => s.classList.remove('visible'));
+            document.getElementById(id).classList.add('visible');
+        }
+    </script>
 </head>
-<body style="background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px;">
-    <div style="background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 500px; border: 3px solid #333; text-align: center;">
-        <h2 style="color: #333;">🎓 BOLETA DE CALIFICACIONES</h2>
+<body>
+    <div class="card">
+        <h2 style="color: #333; text-transform: uppercase;">Portal de Alumno SIAGE</h2>
         <hr>
-        <p><strong>Estudiante:</strong> {{ user.nombre }}</p>
+        <p><strong>Bienvenido Estudiante:</strong> {{ user.nombre }}</p>
         <p><strong>Cuatrimestre:</strong> {{ user.semestre }}</p>
         
-        <div style="text-align: left; margin-top: 20px;">
+        <button class="btn-menu" onclick="mostrarSeccion('sec_calificaciones')">📊 VER CALIFICACIONES</button>
+        <button class="btn-menu" onclick="mostrarSeccion('sec_reportes')">⚠️ VER MIS REPORTES</button>
+        <button class="btn-menu" onclick="mostrarSeccion('sec_horario')">📅 MOSTRAR HORARIO DE CLASE</button>
+
+        <div id="sec_calificaciones" class="seccion">
+            <h3>Tus Calificaciones:</h3>
             {% if user.materias %}
                 {% for clave, datos in user.materias.items() %}
-                <div style="background: #f0f0f0; padding: 10px; border: 1px solid #333; margin-bottom: 10px; border-radius: 5px;">
-                    <p style="margin: 0;"><strong>MATERIA: {{ datos.nombre }}</strong></p>
-                    <p style="margin: 5px 0; font-size: 18px; color: blue;">PROMEDIO: {{ datos.promedio }}</p>
-                    <p style="margin: 0; font-size: 12px; color: #555;">Notas: {{ datos.n1 }}, {{ datos.n2 }}, {{ datos.n3 }}, {{ datos.n4 }}</p>
-                    <p style="margin: 5px 0; font-size: 12px; color: red;">Reporte: {{ datos.reporte or 'Sin reportes' }}</p>
-                </div>
+                    <div style="border-bottom: 1px solid #ccc; margin-bottom: 8px;">
+                        <strong>{{ datos.nombre }}</strong>: <span style="color: blue;">{{ datos.promedio }}</span>
+                        <br><small>N1: {{datos.n1}} | N2: {{datos.n2}} | N3: {{datos.n3}} | N4: {{datos.n4}}</small>
+                    </div>
                 {% endfor %}
             {% else %}
-                <p style="text-align: center; color: #666;">Aún no tienes calificaciones cargadas.</p>
+                <p>No hay calificaciones cargadas.</p>
             {% endif %}
         </div>
-        <br>
-        <a href="/" style="color: #333; font-weight: bold; text-decoration: none;">SALIR</a>
+
+        <div id="sec_reportes" class="seccion">
+            <h3>Reportes Académicos:</h3>
+            {% if user.materias %}
+                {% for clave, datos in user.materias.items() %}
+                    {% if datos.reporte %}
+                        <p><strong>{{ datos.nombre }}:</strong> {{ datos.reporte }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p>Sin reportes registrados.</p>
+            {% endif %}
+        </div>
+
+        <div id="sec_horario" class="seccion">
+            <h3>Mi Horario:</h3>
+            <p style="white-space: pre-wrap;">{{ user.horario }}</p>
+        </div>
+
+        <br><br>
+        <a href="/" style="color: #333; font-weight: bold; text-decoration: none;">SALIR DEL SISTEMA</a>
     </div>
 </body>
 </html>
