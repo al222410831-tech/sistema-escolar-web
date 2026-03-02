@@ -30,12 +30,13 @@ def validar():
     
     if user:
         if user.get("rol") == "maestro":
-            # Si es maestro, buscamos a los alumnos de SU cuatrimestre
-            alumnos = list(usuarios_col.find({"rol": "alumno", "semestre": user.get("semestre")}))
+            # Filtramos alumnos por el mismo cuatrimestre que el maestro
+            cuatri = user.get("semestre")
+            alumnos = list(usuarios_col.find({"rol": "alumno", "semestre": cuatri}))
             return render_template("menu_maestro.html", user=user, alumnos=alumnos)
         else:
             return render_template("menu_alumno.html", user=user)
-    return "<h1>❌ Error: Datos incorrectos</h1><a href='/login'>Volver</a>"
+    return "<h1>❌ Datos incorrectos</h1><a href='/login'>Volver</a>"
 
 @app.route("/guardar_nota", methods=["POST"])
 def guardar_nota():
@@ -43,12 +44,12 @@ def guardar_nota():
     calificacion = request.form.get("calificacion")
     reporte = request.form.get("reporte")
     
-    # Actualizamos al alumno en Mongo agregando o cambiando su nota y reporte
     usuarios_col.update_one(
         {"matricula": matricula},
         {"$set": {"calificacion": calificacion, "reporte": reporte}}
     )
-    return "<h1>✅ Datos guardados</h1><a href='/'>Volver al Inicio</a>"
+    # Redirigir al inicio para evitar reenvío de formulario
+    return "<h1>✅ Datos guardados correctamente</h1><a href='/'>Volver al Menú Principal</a>"
 
 @app.route("/guardar_usuario", methods=["POST"])
 def guardar_usuario():
@@ -56,10 +57,22 @@ def guardar_usuario():
     nombre = request.form.get("nombre")
     password = request.form.get("password")
     datos = {"matricula": matricula, "nombre": nombre, "password": password}
+    
     if matricula.startswith("111"):
-        datos.update({"rol": "maestro", "materia1": request.form.get("materia1"), "materia2": request.form.get("materia2"), "semestre": request.form.get("semestre_maestro")})
+        datos.update({
+            "rol": "maestro", 
+            "materia1": request.form.get("materia1"), 
+            "materia2": request.form.get("materia2"), 
+            "semestre": request.form.get("semestre_maestro"),
+            "calificacion": "", "reporte": "" # Campos vacíos para evitar errores
+        })
     elif matricula.startswith("222"):
-        datos.update({"rol": "alumno", "semestre": request.form.get("semestre_alumno")})
+        datos.update({
+            "rol": "alumno", 
+            "semestre": request.form.get("semestre_alumno"),
+            "calificacion": "0", "reporte": "Sin reporte"
+        })
+    
     usuarios_col.insert_one(datos)
     return "<h1>✅ Registro exitoso</h1><a href='/login'>Ir al Login</a>"
 

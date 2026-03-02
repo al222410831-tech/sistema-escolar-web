@@ -1,50 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Maestro - SIAGE</title>
+    <title>SIAGE - Maestro</title>
     <style>
-        body { background-color: #b36b2d; font-family: sans-serif; margin: 0; padding: 20px; color: white; }
-        .container { background: white; color: #333; padding: 20px; border-radius: 15px; border: 3px solid #333; max-width: 900px; margin: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #333; padding: 10px; text-align: center; }
+        body { background-color: #b36b2d; font-family: sans-serif; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 15px; border: 3px solid #333; max-width: 900px; margin: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th, td { border: 1px solid #333; padding: 8px; text-align: center; color: #333; }
         th { background: #333; color: white; }
-        input[type="text"], input[type="number"] { width: 80%; padding: 5px; }
-        .btn-save { background: green; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+        .btn { background: #333; color: white; padding: 5px 10px; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="card">
         <h2>👨‍🏫 Panel del Maestro: {{ user.nombre }}</h2>
-        <p><strong>Cuatrimestre a cargo:</strong> {{ user.semestre }}</p>
-        <p><strong>Materias:</strong> {{ user.materia1 }} / {{ user.materia2 }}</p>
+        <p>Grupo: <strong>{{ user.semestre }}</strong></p>
         <hr>
-        
-        <h3>👥 LISTA DE ALUMNOS ({{ user.semestre }})</h3>
+        <h3>LISTA DE ALUMNOS</h3>
         <table>
             <tr>
                 <th>Nombre</th>
                 <th>Matrícula</th>
                 <th>Calificación</th>
-                <th>Reporte / Observación</th>
+                <th>Reporte</th>
                 <th>Acción</th>
             </tr>
-            {% for al en alumnos %}
+            {% for al in alumnos %}
             <form action="/guardar_nota" method="POST">
                 <tr>
                     <td>{{ al.nombre }}</td>
                     <td><input type="hidden" name="matricula" value="{{ al.matricula }}">{{ al.matricula }}</td>
-                    <td><input type="number" name="calificacion" value="{{ al.calificacion }}" placeholder="0-10" min="0" max="10"></td>
-                    <td><input type="text" name="reporte" value="{{ al.reporte }}" placeholder="Escribe reporte..."></td>
-                    <td><button type="submit" class="btn-save">Guardar</button></td>
+                    <td><input type="number" name="calificacion" value="{{ al.calificacion }}" step="0.1" min="0" max="10"></td>
+                    <td><input type="text" name="reporte" value="{{ al.reporte }}"></td>
+                    <td><button type="submit" class="btn">Guardar</button></td>
                 </tr>
             </form>
             {% endfor %}
         </table>
-
         <br>
-        <a href="/eliminar_cuenta/{{ user.matricula }}" onclick="return confirm('¿Borrar tu cuenta?')" style="color: red; font-size: 12px;">Eliminar mi cuenta de maestro</a>
-        <br><br>
-        <a href="/" style="text-decoration: none; font-weight: bold; color: #333;">← Cerrar Sesión</a>
+        <a href="/" style="color: red;">Cerrar Sesión</a>
     </div>
 </body>
 </html>
