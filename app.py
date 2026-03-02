@@ -30,51 +30,34 @@ def validar():
     
     if user:
         if user.get("rol") == "maestro":
-            # Filtramos alumnos por el mismo cuatrimestre que el maestro
-            cuatri = user.get("semestre")
-            alumnos = list(usuarios_col.find({"rol": "alumno", "semestre": cuatri}))
+            alumnos = list(usuarios_col.find({"rol": "alumno", "semestre": user.get("semestre")}))
             return render_template("menu_maestro.html", user=user, alumnos=alumnos)
         else:
             return render_template("menu_alumno.html", user=user)
     return "<h1>❌ Datos incorrectos</h1><a href='/login'>Volver</a>"
 
-@app.route("/guardar_nota", methods=["POST"])
-def guardar_nota():
+@app.route("/guardar_datos_alumno", methods=["POST"])
+def guardar_datos_alumno():
     matricula = request.form.get("matricula")
-    calificacion = request.form.get("calificacion")
-    reporte = request.form.get("reporte")
+    # Recibimos las 4 notas
+    n1 = float(request.form.get("n1", 0))
+    n2 = float(request.form.get("n2", 0))
+    n3 = float(request.form.get("n3", 0))
+    n4 = float(request.form.get("n4", 0))
+    reporte = request.form.get("reporte", "")
+    
+    # Calculamos el promedio
+    promedio = (n1 + n2 + n3 + n4) / 4
     
     usuarios_col.update_one(
         {"matricula": matricula},
-        {"$set": {"calificacion": calificacion, "reporte": reporte}}
+        {"$set": {
+            "n1": n1, "n2": n2, "n3": n3, "n4": n4, 
+            "promedio": round(promedio, 2), 
+            "reporte": reporte
+        }}
     )
-    # Redirigir al inicio para evitar reenvío de formulario
-    return "<h1>✅ Datos guardados correctamente</h1><a href='/'>Volver al Menú Principal</a>"
-
-@app.route("/guardar_usuario", methods=["POST"])
-def guardar_usuario():
-    matricula = request.form.get("matricula")
-    nombre = request.form.get("nombre")
-    password = request.form.get("password")
-    datos = {"matricula": matricula, "nombre": nombre, "password": password}
-    
-    if matricula.startswith("111"):
-        datos.update({
-            "rol": "maestro", 
-            "materia1": request.form.get("materia1"), 
-            "materia2": request.form.get("materia2"), 
-            "semestre": request.form.get("semestre_maestro"),
-            "calificacion": "", "reporte": "" # Campos vacíos para evitar errores
-        })
-    elif matricula.startswith("222"):
-        datos.update({
-            "rol": "alumno", 
-            "semestre": request.form.get("semestre_alumno"),
-            "calificacion": "0", "reporte": "Sin reporte"
-        })
-    
-    usuarios_col.insert_one(datos)
-    return "<h1>✅ Registro exitoso</h1><a href='/login'>Ir al Login</a>"
+    return "<h1>✅ Datos actualizados</h1><a href='/'>Regresar al inicio</a>"
 
 @app.route("/eliminar_cuenta/<matricula>")
 def eliminar_cuenta(matricula):

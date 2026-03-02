@@ -1,15 +1,15 @@
 <body style="background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;">
-    <div style="background: white; padding: 40px; border-radius: 15px; width: 400px; box-shadow: 10px 10px 0px #333; text-align: center; border: 2px solid #333;">
-        <h2>🎓 MI PERFIL ESTUDIANTIL</h2>
+    <div style="background: white; padding: 40px; border-radius: 15px; width: 450px; box-shadow: 10px 10px 0px #333; text-align: center; border: 2px solid #333;">
+        <h2 style="color: #333;">🎓 MI BOLETA SIAGE</h2>
         <hr>
-        <p><strong>Nombre:</strong> {{ user.nombre }}</p>
-        <p><strong>Cuatrimestre:</strong> {{ user.semestre }}</p>
-        <div style="background: #f0f0f0; border: 2px dashed #333; padding: 10px; margin: 15px 0;">
-            <p><strong>CALIFICACIÓN:</strong> <span style="font-size: 20px; color: blue;">{{ user.calificacion if user.calificacion else 'Pendiente' }}</span></p>
-            <p><strong>REPORTE:</strong> {{ user.reporte if user.reporte else 'Sin reportes' }}</p>
+        <p><strong>Estudiante:</strong> {{ user.nombre }}</p>
+        <div style="background: #f9f9f9; padding: 15px; border: 1px solid #333; text-align: left;">
+            <p>Nota 1: {{ user.n1 or 0 }} | Nota 2: {{ user.n2 or 0 }}</p>
+            <p>Nota 3: {{ user.n3 or 0 }} | Nota 4: {{ user.n4 or 0 }}</p>
+            <p style="font-size: 20px; border-top: 1px solid #333;"><strong>PROMEDIO FINAL: {{ user.promedio or 0 }}</strong></p>
         </div>
+        <p style="color: red;"><strong>REPORTE:</strong> {{ user.reporte or 'Sin reportes' }}</p>
         <hr>
-        <a href="/eliminar_cuenta/{{ user.matricula }}" onclick="return confirm('¿Darte de baja?')" style="background: red; color: white; padding: 10px; text-decoration: none; border-radius: 5px; display: block; margin-bottom: 10px;">ELIMINAR CUENTA</a>
-        <a href="/" style="color: #333; text-decoration: none;">Cerrar Sesión</a>
+        <a href="/" style="color: #333; text-decoration: none; font-weight: bold;">Cerrar Sesión</a>
     </div>
 </body>
