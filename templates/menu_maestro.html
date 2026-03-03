@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Maestro SIAGE</title>
+    <title>Alumno SIAGE</title>
     <style>
-        body { background:#b36b2d; font-family:sans-serif; padding:20px; }
-        .card { background:white; padding:20px; border-radius:15px; border:3px solid #333; max-width:950px; margin:auto; box-shadow:10px 10px 0px #333; }
-        .sec { display:none; margin-top:20px; border-top:2px solid #333; padding-top:10px; }
-        th, td { border:1px solid #333; padding:5px; font-size:12px; }
-        button { cursor:pointer; font-weight:bold; }
+        body { background:#b36b2d; font-family:sans-serif; padding:10px; }
+        .card { background:white; padding:20px; border-radius:15px; border:3px solid #333; box-shadow:8px 8px 0px #333; }
+        .sec { display:none; margin-top:15px; }
+        table { width:100%; border-collapse:collapse; font-size:9px; }
+        th, td { border:1px solid #333; padding:4px; text-align:center; }
     </style>
     <script>
         function ver(id) {
@@ -18,62 +18,34 @@
 </head>
 <body>
     <div class="card">
-        <h2>👨‍🏫 PANEL DE CONTROL - SIAGE</h2>
-        <p>Maestro: {{ user.nombre }}</p>
-        <button onclick="ver('sec_calif')">📊 CALIFICAR</button>
-        <button onclick="ver('sec_horario')">📅 CONFIGURAR HORARIOS</button>
-        <a href="/"><button style="background:red; color:white;">SALIR</button></a>
+        <h2>🎓 ALUMNO: {{ user.nombre }}</h2>
+        <p>Grupo: {{ user.semestre }}</p>
+        <button onclick="ver('n')">NOTAS</button>
+        <button onclick="ver('h')">HORARIO</button>
+        <a href="/"><button>SALIR</button></a>
 
-        <div id="sec_calif" class="sec">
-            <h3>Asignar Notas</h3>
+        <div id="n" class="sec">
+            <h3>Calificaciones</h3>
+            {% for n in notas %}<p>{{ n.materia }}: <b>{{ n.promedio }}</b></p>{% endfor %}
+        </div>
+
+        <div id="h" class="sec">
+            <h3>📅 Horario: {{ user.semestre }}</h3>
             <table>
-                <tr style="background:#eee;"><th>Alumno</th><th>Materia</th><th>N1</th><th>N2</th><th>N3</th><th>N4</th><th>Reporte</th><th>Acción</th></tr>
-                {% for al in alumnos %}
+                <tr style="background:#333; color:white;">
+                    <th>Hora</th><th>LUN</th><th>MAR</th><th>MIE</th><th>JUE</th><th>VIE</th><th>SAB</th>
+                </tr>
+                {% set horas = ['07:00','07:50','08:40','09:30','10:20','11:10','12:00','12:50','13:40','14:30','15:20','16:10','17:00','17:50','18:40','19:30','20:20'] %}
+                {% for i in range(1, 18) %}
                 <tr>
-                    <form action="/guardar_materia" method="POST">
-                        <input type="hidden" name="matricula" value="{{ al.matricula }}">
-                        <td>{{ al.nombre }}</td>
-                        <td>
-                            <select name="materia_nombre">
-                                <option value="{{ user.materia1 }}">{{ user.materia1 }}</option>
-                                <option value="{{ user.materia2 }}">{{ user.materia2 }}</option>
-                            </select>
-                        </td>
-                        <td><input type="number" name="n1" step="0.1" style="width:35px" required></td>
-                        <td><input type="number" name="n2" step="0.1" style="width:35px" required></td>
-                        <td><input type="number" name="n3" step="0.1" style="width:35px" required></td>
-                        <td><input type="number" name="n4" step="0.1" style="width:35px" required></td>
-                        <td><input type="text" name="reporte"></td>
-                        <td><button type="submit" style="background:green; color:white;">OK</button></td>
-                    </form>
+                    <td style="background:#eee;">{{ horas[i-1] }}</td>
+                    {% for d in ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'] %}
+                        {% set info = horarios_col.find_one({"cuatrimestre": user.semestre, "dia": d}) %}
+                        <td>{{ info.bloques['bloque_' ~ i] if info and info.bloques['bloque_' ~ i] else '-' }}</td>
+                    {% endfor %}
                 </tr>
                 {% endfor %}
             </table>
-        </div>
-
-        <div id="sec_horario" class="sec">
-            <h3>Asignador de Horario Semanal</h3>
-            <form action="/guardar_horario" method="POST">
-                <input type="hidden" name="maestro" value="{{ user.nombre }}">
-                <label>Cuatrimestre:</label>
-                <select name="cuatrimestre">
-                    {% for i in range(1,10) %}<option value="{{i}}° CUATRIMESTRE">{{i}}° CUATRIMESTRE</option>{% endfor %}
-                </select>
-                <label>Día:</label>
-                <select name="dia">
-                    {% for d in ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'] %}<option value="{{d}}">{{d}}</option>{% endfor %}
-                </select>
-                <table>
-                    {% set horas = ['07:00','07:50','08:40','09:30','10:20','11:10','12:00','12:50','13:40','14:30','15:20','16:10','17:00','17:50','18:40','19:30','20:20'] %}
-                    {% for h in horas %}
-                    <tr>
-                        <td>{{ h }} - {{ h[:2]|int }}:{{ (h[3:]|int + 50) }}</td>
-                        <td><input type="text" name="bloque_{{loop.index}}" placeholder="Materia o Libre" style="width:100%;"></td>
-                    </tr>
-                    {% endfor %}
-                </table>
-                <button type="submit" style="width:100%; padding:10px; background:blue; color:white; margin-top:10px;">GUARDAR DÍA</button>
-            </form>
         </div>
     </div>
 </body>
