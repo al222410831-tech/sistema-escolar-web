@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SIAGE - Éxito</title>
+    <title>Registro Exitoso - SIAGE</title>
     <style>
         body { background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 40px; border-radius: 15px; border: 3px solid #333; text-align: center; box-shadow: 10px 10px 0px #333; width: 400px; }
-        .btn { background: #333; color: white; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px; display: inline-block; margin-top: 20px; border: none; cursor: pointer; width: 100%; font-size: 16px; }
-        h1 { color: #27ae60; margin-bottom: 10px; }
+        .card { background: white; padding: 40px; border-radius: 15px; border: 3px solid #333; text-align: center; box-shadow: 10px 10px 0px #333; }
+        .btn { background: #333; color: white; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px; display: inline-block; margin-top: 20px; }
+        .btn:hover { background: #555; }
+        h1 { color: #27ae60; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>✅ ¡Hecho!</h1>
-        <p>{{ mensaje }}</p>
+        <h1>✅ ¡Operación Exitosa!</h1>
+        <p>Los datos se han guardado correctamente en el sistema SIAGE.</p>
         <hr>
-        
-        {% if destino == 'panel' %}
-            <button onclick="window.history.go(-2);" class="btn">VOLVER AL PANEL</button>
-        {% else %}
-            <a href="/" class="btn">IR AL INICIO</a>
-        {% endif %}
+        <a href="/" class="btn">VOLVER AL MENÚ PRINCIPAL</a>
     </div>
 </body>
 </html>
