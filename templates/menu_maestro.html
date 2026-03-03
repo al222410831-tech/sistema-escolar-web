@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Alumno SIAGE</title>
+    <title>Maestro SIAGE</title>
     <style>
         body { background:#b36b2d; font-family:sans-serif; padding:10px; }
-        .card { background:white; padding:20px; border-radius:15px; border:3px solid #333; box-shadow:8px 8px 0px #333; }
+        .card { background:white; padding:15px; border-radius:15px; border:3px solid #333; max-width:1000px; margin:auto; box-shadow:8px 8px 0px #333; }
         .sec { display:none; margin-top:15px; }
-        table { width:100%; border-collapse:collapse; font-size:9px; }
-        th, td { border:1px solid #333; padding:4px; text-align:center; }
+        table { width:100%; border-collapse:collapse; font-size:10px; background:white; }
+        th, td { border:1px solid #333; padding:3px; text-align:center; }
+        button { cursor:pointer; font-weight:bold; padding:8px; margin:5px; border-radius:5px; }
     </style>
     <script>
         function ver(id) {
@@ -18,34 +19,64 @@
 </head>
 <body>
     <div class="card">
-        <h2>🎓 ALUMNO: {{ user.nombre }}</h2>
-        <p>Grupo: {{ user.semestre }}</p>
-        <button onclick="ver('n')">NOTAS</button>
-        <button onclick="ver('h')">HORARIO</button>
-        <a href="/"><button>SALIR</button></a>
+        <h2>👨‍🏫 PANEL DE CONTROL MAESTRO</h2>
+        <button onclick="ver('sec_calif')">📊 CALIFICAR</button>
+        <button onclick="ver('sec_horario')">📅 HORARIOS SEMANALES</button>
+        <a href="/"><button style="background:red; color:white;">SALIR</button></a>
 
-        <div id="n" class="sec">
-            <h3>Calificaciones</h3>
-            {% for n in notas %}<p>{{ n.materia }}: <b>{{ n.promedio }}</b></p>{% endfor %}
-        </div>
-
-        <div id="h" class="sec">
-            <h3>📅 Horario: {{ user.semestre }}</h3>
+        <div id="sec_calif" class="sec">
+            <h3>Asignar Calificaciones</h3>
             <table>
-                <tr style="background:#333; color:white;">
-                    <th>Hora</th><th>LUN</th><th>MAR</th><th>MIE</th><th>JUE</th><th>VIE</th><th>SAB</th>
-                </tr>
-                {% set horas = ['07:00','07:50','08:40','09:30','10:20','11:10','12:00','12:50','13:40','14:30','15:20','16:10','17:00','17:50','18:40','19:30','20:20'] %}
-                {% for i in range(1, 18) %}
-                <tr>
-                    <td style="background:#eee;">{{ horas[i-1] }}</td>
-                    {% for d in ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'] %}
-                        {% set info = horarios_col.find_one({"cuatrimestre": user.semestre, "dia": d}) %}
-                        <td>{{ info.bloques['bloque_' ~ i] if info and info.bloques['bloque_' ~ i] else '-' }}</td>
-                    {% endfor %}
-                </tr>
+                <tr style="background:#eee;"><th>Alumno</th><th>Materia</th><th>N1</th><th>N2</th><th>N3</th><th>N4</th><th>Acción</th></tr>
+                {% for al in alumnos %}
+                <form action="/guardar_materia" method="POST">
+                    <input type="hidden" name="matricula" value="{{ al.matricula }}">
+                    <tr>
+                        <td>{{ al.nombre }}</td>
+                        <td><select name="materia_nombre"><option>{{ user.materia1 }}</option><option>{{ user.materia2 }}</option></select></td>
+                        <td><input type="number" name="n1" step="0.1" style="width:35px"></td>
+                        <td><input type="number" name="n2" step="0.1" style="width:35px"></td>
+                        <td><input type="number" name="n3" step="0.1" style="width:35px"></td>
+                        <td><input type="number" name="n4" step="0.1" style="width:35px"></td>
+                        <td><button type="submit" style="background:green; color:white;">OK</button></td>
+                    </tr>
+                </form>
                 {% endfor %}
             </table>
+        </div>
+
+        <div id="sec_horario" class="sec">
+            <h3>📅 Gestión de Horario por Cuatrimestre</h3>
+            <form action="/guardar_horario" method="POST">
+                <label>Seleccione Cuatrimestre:</label>
+                <select name="cuatrimestre">
+                    {% for i in range(1,10) %}<option value="{{i}}° CUATRIMESTRE">{{i}}° CUATRIMESTRE</option>{% endfor %}
+                </select>
+                <div style="overflow-x:auto; margin-top:10px;">
+                    <table>
+                        <tr style="background:#333; color:white;">
+                            <th>Hora</th><th>LUN</th><th>MAR</th><th>MIE</th><th>JUE</th><th>VIE</th><th>SAB</th>
+                        </tr>
+                        {% set horas = ['07:00','07:50','08:40','09:30','10:20','11:10','12:00','12:50','13:40','14:30','15:20','16:10','17:00','17:50','18:40','19:30','20:20'] %}
+                        {% for i in range(1, 18) %}
+                        <tr>
+                            <td style="background:#f0f0f0;">{{ horas[i-1] }}</td>
+                            {% for d in ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'] %}
+                            <td>
+                                <select name="{{d}}_bloque_{{i}}" style="width:65px; font-size:9px;">
+                                    <option value="">-</option>
+                                    <option value="{{ user.materia1 }}">{{ user.materia1 }}</option>
+                                    <option value="{{ user.materia2 }}">{{ user.materia2 }}</option>
+                                    <option value="RECESO">RECESO</option>
+                                </select>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <button type="submit" style="width:100%; background:blue; color:white; padding:15px; margin-top:10px;">GUARDAR HORARIO SEMANAL</button>
+            </form>
         </div>
     </div>
 </body>
