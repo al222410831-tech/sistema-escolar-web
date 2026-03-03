@@ -37,12 +37,13 @@ def validar():
             alumnos = list(usuarios_col.find({"rol": "alumno", "semestre": user.get("semestre")}))
             return render_template("menu_maestro.html", user=user, alumnos=alumnos)
         else:
+            # BUSCAMOS LOS DATOS DEL ALUMNO
             notas = list(calif_col.find({"matricula": matricula}))
             reps = list(reportes_col.find({"matricula": matricula}))
-            # El alumno solo ve el horario de SU semestre
+            # IMPORTANTE: Pasamos 'horarios_col' para que el HTML consulte la DB directamente
             return render_template("menu_alumno.html", user=user, notas=notas, reportes=reps, horarios_col=horarios_col)
-    return "<h1>❌ Datos incorrectos</h1><a href='/login'>Volver</a>"
-
+    
+    return "<h1>❌ Credenciales incorrectas</h1><a href='/login'>Volver</a>"
 @app.route("/guardar_materia", methods=["POST"])
 def guardar_materia():
     matri = request.form.get("matricula")

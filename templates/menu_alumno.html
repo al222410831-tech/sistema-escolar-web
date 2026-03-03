@@ -29,24 +29,32 @@
             {% for n in notas %}<p>{{ n.materia }}: <b>{{ n.promedio }}</b></p>{% endfor %}
         </div>
 
-        <div id="h" class="sec">
-            <h3>Horario Semanal</h3>
-            <table>
-                <tr style="background:#333; color:white;">
-                    <th>Hora</th><th>LUN</th><th>MAR</th><th>MIE</th><th>JUE</th><th>VIE</th><th>SAB</th>
-                </tr>
-                {% set horas = ['07:00','07:50','08:40','09:30','10:20','11:10','12:00','12:50','13:40','14:30','15:20','16:10','17:00','17:50','18:40','19:30','20:20'] %}
-                {% for i in range(1, 18) %}
-                <tr>
-                    <td style="background:#eee;">{{ horas[i-1] }}</td>
-                    {% for d in ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'] %}
-                        {% set h_dia = horarios_col.find_one({"cuatrimestre": user.semestre, "dia": d}) %}
-                        <td>{{ h_dia.bloques['bloque_' ~ i] if h_dia and h_dia.bloques['bloque_' ~ i] else '-' }}</td>
-                    {% endfor %}
-                </tr>
+<div id="h" class="sec">
+    <h3>📅 MI HORARIO SEMANAL: {{ user.semestre }}</h3>
+    <div style="overflow-x: auto;">
+        <table style="width:100%; border-collapse: collapse; background:white;">
+            <tr style="background:#333; color:white;">
+                <th>Hora</th>
+                <th>LUN</th><th>MAR</th><th>MIE</th><th>JUE</th><th>VIE</th><th>SAB</th>
+            </tr>
+            {% set horas = ['07:00','07:50','08:40','09:30','10:20','11:10','12:00','12:50','13:40','14:30','15:20','16:10','17:00','17:50','18:40','19:30','20:20'] %}
+            
+            {% for i in range(1, 18) %}
+            <tr>
+                <td style="background:#eee; font-weight:bold; font-size:10px;">{{ horas[i-1] }}</td>
+                {% for d in ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'] %}
+                    {# Buscamos en la DB el horario que coincida con el semestre del alumno y el día #}
+                    {% set h_info = horarios_col.find_one({"cuatrimestre": user.semestre, "dia": d}) %}
+                    <td style="border:1px solid #ccc; font-size:9px; height:30px;">
+                        {% if h_info and h_info.bloques['bloque_' ~ i] %}
+                            {{ h_info.bloques['bloque_' ~ i] }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
                 {% endfor %}
-            </table>
-        </div>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
-</body>
-</html>
+</div>
