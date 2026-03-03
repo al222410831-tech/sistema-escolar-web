@@ -1,18 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>SIAGE - Inicio</title>
+    <meta charset="UTF-8">
+    <title>SIAGE - Bienvenido</title>
     <style>
-        body { background-color: #b36b2d; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background-color: white; text-align: center; border: 3px solid #333; padding: 40px; width: 450px; border-radius: 15px; box-shadow: 10px 10px 0px #333; }
-        h1 { font-size: 18px; color: #333; margin-bottom: 20px; text-transform: uppercase; }
-        .btn { display: block; width: 90%; padding: 15px; margin: 10px auto; background-color: #333; color: white; text-decoration: none; font-weight: bold; border-radius: 5px; }
+        body { 
+            background: #b36b2d; /* El color café/naranja que usas */
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            border: 4px solid #333;
+            box-shadow: 10px 10px 0px #333;
+            text-align: center;
+            width: 350px;
+        }
+        .logo {
+            width: 150px;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: block;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .btn:hover { background: #555; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>SISTEMA INTEGRAL DE ADMINISTRACIÓN Y GESTIÓN EDUCATIVA</h1>
+    <div class="card">
+        <img src="https://i.ibb.co/997mF5G7/Whats-App-Image-2026-01-26-at-13-35-08-2.jpg" alt="Logo" class="logo">
+        
+        <h1>SIAGE</h1>
+        <p>Gestión Educativa en la Nube</p>
+        
         <a href="/login" class="btn">INICIAR SESIÓN</a>
-        <a href="/registro" class="btn">REGISTRAR USUARIO</a>
+        <a href="/registro" style="color: #666; font-size: 14px; text-decoration: none;">¿Eres nuevo? Regístrate aquí</a>
     </div>
 </body>
+</html>
