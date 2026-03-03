@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, redirect, url_for
 from pymongo import MongoClient
 import os
@@ -10,7 +9,7 @@ MONGO_URI = "mongodb+srv://al222410831_db_user:Daniel123@cluster0.iuigysp.mongod
 client = MongoClient(MONGO_URI)
 db = client["proyecto2"]
 
-# COLECCIONES SEPARADAS EN LA BASE DE DATOS
+# COLECCIONES SEPARADAS
 usuarios_col = db["usuarios"]
 calif_col = db["calificaciones"]
 reportes_col = db["reportes"]
@@ -49,25 +48,28 @@ def validar():
 def guardar_materia():
     matri = request.form.get("matricula")
     materia = request.form.get("materia_nombre")
-    n1 = float(request.form.get("n1", 0))
-    n2 = float(request.form.get("n2", 0))
-    n3 = float(request.form.get("n3", 0))
-    n4 = float(request.form.get("n4", 0))
-    rep_txt = request.form.get("reporte", "")
-    promedio = round((n1 + n2 + n3 + n4) / 4, 2)
+    try:
+        n1 = float(request.form.get("n1", 0))
+        n2 = float(request.form.get("n2", 0))
+        n3 = float(request.form.get("n3", 0))
+        n4 = float(request.form.get("n4", 0))
+        rep_txt = request.form.get("reporte", "")
+        promedio = round((n1 + n2 + n3 + n4) / 4, 2)
 
-    calif_col.update_one(
-        {"matricula": matri, "materia": materia},
-        {"$set": {"n1": n1, "n2": n2, "n3": n3, "n4": n4, "promedio": promedio}},
-        upsert=True
-    )
-    if rep_txt:
-        reportes_col.update_one(
+        calif_col.update_one(
             {"matricula": matri, "materia": materia},
-            {"$set": {"texto": rep_txt}},
+            {"$set": {"n1": n1, "n2": n2, "n3": n3, "n4": n4, "promedio": promedio}},
             upsert=True
         )
-    return "<h1>✅ Datos Guardados</h1><a href='/'>Regresar al Inicio</a>"
+        if rep_txt:
+            reportes_col.update_one(
+                {"matricula": matri, "materia": materia},
+                {"$set": {"texto": rep_txt}},
+                upsert=True
+            )
+        return render_template("exito.html")
+    except:
+        return "<h1>❌ Error al procesar números</h1><a href='/'>Volver</a>"
 
 @app.route("/guardar_horario", methods=["POST"])
 def guardar_horario():
@@ -78,12 +80,16 @@ def guardar_horario():
         {"$set": {"bloques": bloques, "maestro": request.form.get("maestro")}},
         upsert=True
     )
-    return "<h1>✅ Horario Guardado</h1><a href='/'>Regresar al Inicio</a>"
+    return render_template("exito.html")
 
 @app.route("/guardar_usuario", methods=["POST"])
 def guardar_usuario():
     matricula = request.form.get("matricula")
-    datos = {"matricula": matricula, "nombre": request.form.get("nombre"), "password": request.form.get("password")}
+    nombre = request.form.get("nombre")
+    password = request.form.get("password")
+    
+    datos = {"matricula": matricula, "nombre": nombre, "password": password}
+    
     if matricula.startswith("111"):
         datos.update({
             "rol": "maestro", 
@@ -92,9 +98,20 @@ def guardar_usuario():
             "semestre": request.form.get("semestre_maestro")
         })
     else:
-        datos.update({"rol": "alumno", "semestre": request.form.get("semestre_alumno")})
+        datos.update({
+            "rol": "alumno", 
+            "semestre": request.form.get("semestre_alumno")
+        })
+    
     usuarios_col.insert_one(datos)
-    return "<h1>✅ Registro exitoso</h1><a href='/login'>Ir al Login</a>"
+    return render_template("exito.html")
+
+@app.route("/eliminar_cuenta/<matricula>")
+def eliminar_cuenta(matricula):
+    usuarios_col.delete_one({"matricula": matricula})
+    calif_col.delete_many({"matricula": matricula})
+    reportes_col.delete_many({"matricula": matricula})
+    return render_template("exito.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
