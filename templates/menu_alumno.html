@@ -1,81 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Portal de Alumno SIAGE</title>
+    <title>Alumno SIAGE</title>
     <style>
-        body { background-color: #b36b2d; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 500px; border: 3px solid #333; text-align: center; box-shadow: 10px 10px 0px #333; }
-        .btn { background: #333; color: white; padding: 12px; margin: 5px; width: 100%; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; text-transform: uppercase; }
-        .sec { display: none; margin-top: 15px; text-align: left; background: #eee; padding: 15px; border-radius: 10px; border: 1px solid #333; }
-        .visible { display: block; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        td { border: 1px solid #333; padding: 4px; font-size: 11px; }
+        body { background:#b36b2d; font-family:sans-serif; padding:20px; }
+        .card { background:white; padding:20px; border-radius:15px; border:3px solid #333; box-shadow:10px 10px 0px #333; }
+        .sec { display:none; margin-top:15px; }
+        table { width:100%; border-collapse:collapse; background:white; }
+        th, td { border:1px solid #333; padding:4px; font-size:10px; text-align:center; }
     </style>
     <script>
-        function ver(id) {
-            document.querySelectorAll('.sec').forEach(s => s.classList.remove('visible'));
-            document.getElementById(id).classList.add('visible');
+        function ver(id){
+            document.querySelectorAll('.sec').forEach(s => s.style.display='none');
+            document.getElementById(id).style.display='block';
         }
     </script>
 </head>
 <body>
     <div class="card">
-        <h2 style="text-transform: uppercase;">PORTAL DE ALUMNO SIAGE</h2>
-        <hr>
-        <p><strong>Estudiante:</strong> {{ user.nombre }}</p>
-        <p><strong>Cuatrimestre:</strong> {{ user.semestre }}</p>
-        
-        <button class="btn" onclick="ver('n')">📊 VER CALIFICACIONES</button>
-        <button class="btn" onclick="ver('r')">⚠️ VER MIS REPORTES</button>
-        <button class="btn" onclick="ver('h')">📅 MOSTRAR HORARIO DE CLASE</button>
+        <h2>🎓 PORTAL ALUMNO: {{ user.nombre }}</h2>
+        <p>Semestre: {{ user.semestre }}</p>
+        <button onclick="ver('n')">NOTAS</button>
+        <button onclick="ver('h')">HORARIO</button>
+        <a href="/"><button>SALIR</button></a>
 
         <div id="n" class="sec">
-            <h3>Boleta de Calificaciones:</h3>
-            {% if notas %}
-                {% for n in notas %}
-                <div style="border-bottom:1px solid #333; margin-bottom:5px; padding-bottom:5px;">
-                    <strong>{{ n.materia }}</strong>: <span style="color:blue; font-size:18px;">{{ n.promedio }}</span>
-                    <br><small>N1:{{n.n1}} | N2:{{n.n2}} | N3:{{n.n3}} | N4:{{n.n4}}</small>
-                </div>
-                {% endfor %}
-            {% else %}
-                <p>Aún no hay notas cargadas.</p>
-            {% endif %}
-        </div>
-
-        <div id="r" class="sec">
-            <h3>Mis Reportes:</h3>
-            {% if reportes %}
-                {% for r in reportes %}
-                <p style="background:white; padding:5px; border-left:4px solid red;">
-                    <strong>{{ r.materia }}:</strong> {{ r.texto }}
-                </p>
-                {% endfor %}
-            {% else %}
-                <p>Felicidades, no tienes reportes.</p>
-            {% endif %}
+            <h3>Mis Notas</h3>
+            {% for n in notas %}<p>{{ n.materia }}: <b>{{ n.promedio }}</b></p>{% endfor %}
         </div>
 
         <div id="h" class="sec">
-            <h3>Horario Oficial:</h3>
-            {% if horario %}
-                <table>
-                    {% set horas = ['07:00-07:50','07:50-08:40','08:40-09:30','09:30-10:20','10:20-11:10','11:10-12:00','12:00-12:50','12:50-13:40','13:40-14:30','14:30-15:20','15:20-16:10','16:10-17:00','17:00-17:50','17:50-18:40','18:40-19:30','19:30-20:20','20:20-21:10'] %}
-                    {% for h in horas %}
-                    <tr>
-                        <td>{{ h }}</td>
-                        <td>{{ horario.bloques['bloque_' ~ loop.index] }}</td>
-                    </tr>
+            <h3>Horario Semanal</h3>
+            <table>
+                <tr style="background:#333; color:white;">
+                    <th>Hora</th><th>LUN</th><th>MAR</th><th>MIE</th><th>JUE</th><th>VIE</th><th>SAB</th>
+                </tr>
+                {% set horas = ['07:00','07:50','08:40','09:30','10:20','11:10','12:00','12:50','13:40','14:30','15:20','16:10','17:00','17:50','18:40','19:30','20:20'] %}
+                {% for i in range(1, 18) %}
+                <tr>
+                    <td style="background:#eee;">{{ horas[i-1] }}</td>
+                    {% for d in ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'] %}
+                        {% set h_dia = horarios_col.find_one({"cuatrimestre": user.semestre, "dia": d}) %}
+                        <td>{{ h_dia.bloques['bloque_' ~ i] if h_dia and h_dia.bloques['bloque_' ~ i] else '-' }}</td>
                     {% endfor %}
-                </table>
-                <p><small>Maestro: {{ horario.maestro }}</small></p>
-            {% else %}
-                <p>Horario pendiente de asignar por el maestro.</p>
-            {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
         </div>
-
-        <br><br>
-        <a href="/" style="color: #333; font-weight: bold; text-decoration: none;">← SALIR</a>
     </div>
 </body>
 </html>
