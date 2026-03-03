@@ -4,63 +4,86 @@
     <title>Maestro SIAGE</title>
     <style>
         body { background-color: #b36b2d; font-family: sans-serif; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 15px; border: 3px solid #333; max-width: 1100px; margin: auto; text-align: center; }
-        select, button { padding: 10px; margin: 10px; border: 2px solid #333; font-weight: bold; }
+        .card { background: white; padding: 25px; border-radius: 15px; border: 3px solid #333; max-width: 1000px; margin: auto; text-align: center; box-shadow: 10px 10px 0px #333; }
+        button { padding: 10px; margin: 5px; border: 2px solid #333; font-weight: bold; cursor: pointer; border-radius: 5px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #333; padding: 8px; font-size: 13px; }
-        .seccion { display: none; margin-top: 20px; }
+        .sec { display: none; margin-top: 20px; }
         .visible { display: block; }
     </style>
     <script>
-        function seleccionarMateria() {
-            let mat = document.getElementById('materia_select').value;
-            document.getElementById('tabla_alumnos').classList.add('visible');
-            document.querySelectorAll('.label_materia').forEach(el => el.innerText = mat);
-            document.querySelectorAll('.input_materia').forEach(el => el.value = mat);
+        function ver(id) {
+            document.querySelectorAll('.sec').forEach(s => s.classList.remove('visible'));
+            document.getElementById(id).classList.add('visible');
+        }
+        function cargarMateria() {
+            let m = document.getElementById('sel_mat').value;
+            document.querySelectorAll('.label_m').forEach(e => e.innerText = m);
+            document.querySelectorAll('.in_m').forEach(e => e.value = m);
+            ver('sec_alumnos');
         }
     </script>
 </head>
 <body>
     <div class="card">
-        <h2>👨‍🏫 Panel del Maestro: {{ user.nombre }}</h2>
-        <p>Gestionando grupo: <strong>{{ user.semestre }}</strong></p>
+        <h2>👨‍🏫 PANEL MAESTRO SIAGE</h2>
+        <p>Grupo: {{ user.semestre }} | Maestro: {{ user.nombre }}</p>
         <hr>
-        
-        <h3>¿Qué materia desea calificar hoy?</h3>
-        <select id="materia_select">
+        <select id="sel_mat">
             <option value="{{ user.materia1 }}">{{ user.materia1 }}</option>
             <option value="{{ user.materia2 }}">{{ user.materia2 }}</option>
         </select>
-        <button onclick="seleccionarMateria()" style="background: #333; color: white;">CARGAR GRUPO</button>
+        <button onclick="cargarMateria()" style="background:#333; color:white;">GESTIONAR MATERIA</button>
+        <button onclick="ver('sec_h')" style="background:#e67e22; color:white;">📅 ASIGNAR HORARIO</button>
 
-        <div id="tabla_alumnos" class="seccion">
-            <h3 style="color: blue;">Cargando: <span class="label_materia"></span></h3>
+        <div id="sec_alumnos" class="sec">
+            <h3 style="color:blue;">Materia: <span class="label_m"></span></h3>
             <table>
-                <tr style="background: #eee;">
-                    <th>Alumno</th>
-                    <th>N1</th><th>N2</th><th>N3</th><th>N4</th>
-                    <th>Reporte</th>
-                    <th>Acción</th>
-                </tr>
+                <tr style="background:#eee;"><th>Alumno</th><th>N1</th><th>N2</th><th>N3</th><th>N4</th><th>Reporte</th><th>Acción</th></tr>
                 {% for al in alumnos %}
                 <form action="/guardar_materia" method="POST">
                     <input type="hidden" name="matricula" value="{{ al.matricula }}">
-                    <input type="hidden" name="materia_nombre" class="input_materia">
+                    <input type="hidden" name="materia_nombre" class="in_m">
                     <tr>
                         <td>{{ al.nombre }}</td>
-                        <td><input type="number" name="n1" step="0.1" style="width:40px"></td>
-                        <td><input type="number" name="n2" step="0.1" style="width:40px"></td>
-                        <td><input type="number" name="n3" step="0.1" style="width:40px"></td>
-                        <td><input type="number" name="n4" step="0.1" style="width:40px"></td>
-                        <td><input type="text" name="reporte" placeholder="Conducta..."></td>
-                        <td><button type="submit" style="background: green; color: white; border: none; padding: 5px 10px; cursor: pointer;">Guardar</button></td>
+                        <td><input type="number" name="n1" step="0.1" style="width:35px" required></td>
+                        <td><input type="number" name="n2" step="0.1" style="width:35px" required></td>
+                        <td><input type="number" name="n3" step="0.1" style="width:35px" required></td>
+                        <td><input type="number" name="n4" step="0.1" style="width:35px" required></td>
+                        <td><input type="text" name="reporte" placeholder="Opcional"></td>
+                        <td><button type="submit" style="background:green; color:white; border:none;">Guardar</button></td>
                     </tr>
                 </form>
                 {% endfor %}
             </table>
         </div>
+
+        <div id="sec_h" class="sec">
+            <h3>Horario (7:00 AM - 9:10 PM)</h3>
+            <form action="/guardar_horario" method="POST">
+                <input type="hidden" name="semestre" value="{{ user.semestre }}">
+                <input type="hidden" name="maestro" value="{{ user.nombre }}">
+                <table>
+                    {% set horas = ['07:00-07:50','07:50-08:40','08:40-09:30','09:30-10:20','10:20-11:10','11:10-12:00','12:00-12:50','12:50-13:40','13:40-14:30','14:30-15:20','15:20-16:10','16:10-17:00','17:00-17:50','17:50-18:40','18:40-19:30','19:30-20:20','20:20-21:10'] %}
+                    {% for h in horas %}
+                    <tr>
+                        <td>{{ h }}</td>
+                        <td>
+                            <select name="bloque_{{ loop.index }}" style="width:100%;">
+                                <option value="LIBRE">LIBRE</option>
+                                <option value="{{ user.materia1 }}">{{ user.materia1 }}</option>
+                                <option value="{{ user.materia2 }}">{{ user.materia2 }}</option>
+                                <option value="RECESO">RECESO</option>
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <button type="submit" style="background:green; color:white; width:100%; padding:10px;">GUARDAR TODO EL HORARIO</button>
+            </form>
+        </div>
         <br><br>
-        <a href="/" style="color: red; font-weight: bold; text-decoration: none;">Cerrar Sesión</a>
+        <a href="/" style="font-weight:bold; color:#333; text-decoration:none;">← CERRAR SESIÓN</a>
     </div>
 </body>
 </html>
