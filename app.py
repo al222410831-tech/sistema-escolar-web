@@ -9,7 +9,6 @@ MONGO_URI = "mongodb+srv://al222410831_db_user:Daniel123@cluster0.iuigysp.mongod
 client = MongoClient(MONGO_URI)
 db = client["proyecto2"]
 
-# COLECCIONES SEPARADAS
 usuarios_col = db["usuarios"]
 calif_col = db["calificaciones"]
 reportes_col = db["reportes"]
@@ -48,71 +47,35 @@ def validar():
 def guardar_materia():
     matri = request.form.get("matricula")
     materia = request.form.get("materia_nombre")
-    try:
-        n1 = float(request.form.get("n1", 0))
-        n2 = float(request.form.get("n2", 0))
-        n3 = float(request.form.get("n3", 0))
-        n4 = float(request.form.get("n4", 0))
-        rep_txt = request.form.get("reporte", "")
-        promedio = round((n1 + n2 + n3 + n4) / 4, 2)
+    n1, n2, n3, n4 = float(request.form.get("n1",0)), float(request.form.get("n2",0)), float(request.form.get("n3",0)), float(request.form.get("n4",0))
+    rep_txt = request.form.get("reporte", "")
+    promedio = round((n1+n2+n3+n4)/4, 2)
 
-        calif_col.update_one(
-            {"matricula": matri, "materia": materia},
-            {"$set": {"n1": n1, "n2": n2, "n3": n3, "n4": n4, "promedio": promedio}},
-            upsert=True
-        )
-        if rep_txt:
-            reportes_col.update_one(
-                {"matricula": matri, "materia": materia},
-                {"$set": {"texto": rep_txt}},
-                upsert=True
-            )
-        return render_template("exito.html")
-    except:
-        return "<h1>❌ Error al procesar números</h1><a href='/'>Volver</a>"
+    calif_col.update_one({"matricula": matri, "materia": materia}, {"$set": {"n1":n1, "n2":n2, "n3":n3, "n4":n4, "promedio": promedio}}, upsert=True)
+    if rep_txt:
+        reportes_col.update_one({"matricula": matri, "materia": materia}, {"$set": {"texto": rep_txt}}, upsert=True)
+    
+    # Mensaje personalizado y botón de "Volver al Panel"
+    return render_template("exito.html", mensaje="Datos guardados correctamente", destino="panel")
 
 @app.route("/guardar_horario", methods=["POST"])
 def guardar_horario():
     semestre = request.form.get("semestre")
     bloques = {f"bloque_{i}": request.form.get(f"bloque_{i}") for i in range(1, 18)}
-    horarios_col.update_one(
-        {"semestre": semestre},
-        {"$set": {"bloques": bloques, "maestro": request.form.get("maestro")}},
-        upsert=True
-    )
-    return render_template("exito.html")
+    horarios_col.update_one({"semestre": semestre}, {"$set": {"bloques": bloques, "maestro": request.form.get("maestro")}}, upsert=True)
+    return render_template("exito.html", mensaje="Horario actualizado", destino="panel")
 
 @app.route("/guardar_usuario", methods=["POST"])
 def guardar_usuario():
     matricula = request.form.get("matricula")
-    nombre = request.form.get("nombre")
-    password = request.form.get("password")
-    
-    datos = {"matricula": matricula, "nombre": nombre, "password": password}
-    
+    datos = {"matricula": matricula, "nombre": request.form.get("nombre"), "password": request.form.get("password")}
     if matricula.startswith("111"):
-        datos.update({
-            "rol": "maestro", 
-            "materia1": request.form.get("materia1"), 
-            "materia2": request.form.get("materia2"), 
-            "semestre": request.form.get("semestre_maestro")
-        })
+        datos.update({"rol": "maestro", "materia1": request.form.get("materia1"), "materia2": request.form.get("materia2"), "semestre": request.form.get("semestre_maestro")})
     else:
-        datos.update({
-            "rol": "alumno", 
-            "semestre": request.form.get("semestre_alumno")
-        })
-    
+        datos.update({"rol": "alumno", "semestre": request.form.get("semestre_alumno")})
     usuarios_col.insert_one(datos)
-    return render_template("exito.html")
-
-@app.route("/eliminar_cuenta/<matricula>")
-def eliminar_cuenta(matricula):
-    usuarios_col.delete_one({"matricula": matricula})
-    calif_col.delete_many({"matricula": matricula})
-    reportes_col.delete_many({"matricula": matricula})
-    return render_template("exito.html")
+    # Al registrarse, sí conviene volver al Login (Inicio)
+    return render_template("exito.html", mensaje="Usuario registrado con éxito", destino="inicio")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
