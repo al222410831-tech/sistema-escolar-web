@@ -27,7 +27,38 @@ def login_page():
 def registro_page():
     return render_template("registro.html")
 
-@app.route("/validar", methods=["POST"])
+@app.route("/validar", methods=["POST"])@app.route("/validar", methods=["POST"])
+def validar():
+    matricula = request.form.get("usuario")
+    password = request.form.get("password")
+    user = usuarios_col.find_one({"matricula": matricula, "password": password})
+            
+    if user:
+        # ======= BLOQUE DE RASTREO PARA SPARK =======
+        import datetime
+        log_login = {
+            "matricula": user.get('matricula'),
+            "nombre": user.get('nombre'),
+            "rol": user.get('rol'),
+            "evento": "Inicio de Sesión",
+            "gateway": "200.0.0.1",
+            "status": "Online",
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        db["logs_asistencia"].insert_one(log_login)
+        # ============================================
+
+        # Aquí sigue tu lógica normal de redirección
+        if user.get("rol") == "maestro":
+            semestre_m = user.get("semestre", "N/A")
+            alumnos = list(usuarios_col.find({"rol": "alumno", "semestre": semestre_m}))
+            return render_template("menu_maestro.html", user=user, alumnos=alumnos, horarios_col=horarios_col)
+        else:
+            notas = list(calif_col.find({"matricula": matricula}))
+            reps = list(reportes_col.find({"matricula": matricula}))
+            return render_template("menu_alumno.html", user=user, notas=notas, reportes=reps, horarios_col=horarios_col)
+        
+    return "<h1>❌ Datos incorrectos</h1><a href='/login'>Volver</a>"
 def validar():
     matricula = request.form.get("usuario")
     password = request.form.get("password")
