@@ -16,8 +16,7 @@ reportes_col = db["reportes"]
 horarios_col = db["horarios"]
 
 @app.route("/")
-def index():
-    return render_template("index.html")
+def index(    return render_template("index.html")
 
 @app.route("/login")
 def login_page():
@@ -32,9 +31,8 @@ def validar():
     matricula = request.form.get("usuario")
     password = request.form.get("password")
     user = usuarios_col.find_one({"matricula": matricula, "password": password})
-            
-    if user:
-        # ======= BLOQUE DE RASTREO PARA SPARK =======
+    
+if user:
         import datetime
         log_login = {
             "matricula": user.get('matricula'),
@@ -46,7 +44,6 @@ def validar():
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         db["logs_asistencia"].insert_one(log_login)
-        # ============================================
 
         # Aquí sigue tu lógica normal de redirección
         if user.get("rol") == "maestro":
