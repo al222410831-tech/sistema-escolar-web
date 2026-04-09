@@ -27,47 +27,30 @@ def login_page():
 def registro_page():
     return render_template("registro.html")
 
-@app.route('/validar', methods=['POST'])
+@app.route("/validar", methods=["POST"])
 def validar():
-    matricula = request.form.get('matricula')
-    password = request.form.get('password')
+    matricula = request.form.get("usuario")
+    password = request.form.get("password")
+    user = db.usuarios.find_one({"matricula": matricula, "password": password})
     
-    # Buscamos al usuario en la base de datos
-    user = usuarios_col.find_one({'matricula': matricula, 'password': password})
-
     if user:
-        # --- BLOQUE DE AUTOMATIZACIÓN PARA SPARK ---
-        import datetime
+        # El log para el monitor que ves en la terminal
         log_login = {
-            "matricula": user.get('matricula'),
-            "nombre": user.get('nombre'),
-            "rol": user.get('rol'),
+            "nombre": user.get('nombre', 'Usuario'),
+            "rol": user.get('rol', 'Usuario'),
             "evento": "Inicio de Sesión",
-            "gateway": "200.0.0.1",
-            "status": "Online",
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-        # Guardamos en la colección que vigila el monitor_iot.py
         db["logs_asistencia"].insert_one(log_login)
-        # --------------------------------------------
 
-        # Lógica para redireccionar según el rol
         if user.get("rol") == "maestro":
-            semestre_n = user.get("semestre", "N/A")
-            alumnos = list(usuarios_col.find({"rol": "alumno", "semestre": semestre_n}))
-            return render_template("menu_maestro.html", user=user, alumnos=alumnos, horarios_col=horarios_col)
-        
-        elif user.get("rol") == "alumno":
-            notas = list(calif_col.find({"matricula": matricula}))
-            reps = list(reportes_col.find({"matricula": matricula}))
-            return render_template("menu_alumno.html", user=user, notas=notas, reportes=reps, horarios_col=horarios_col)
-        
+            alumnos = list(db.usuarios.find({"rol": "alumno"}))
+            return render_template("menu_maestro.html", user=user, alumnos=alumnos)
         else:
-            # Por si tienes algún otro rol como admin
             return render_template("menu_alumno.html", user=user)
 
-    # Si los datos son incorrectos
-    return '<h1>❌ Datos incorrectos</h1><p>Matrícula o contraseña no válidos.</p><a href="/login">Volver a intentar</a>'def validar():
+    # Si los datos están mal, esto es lo que sale
+    return "<h1>❌ Datos incorrectos</h1><a href='/login'>Volver</a>"
 
     matricula = request.form.get("usuario")
     password = request.form.get("password")
