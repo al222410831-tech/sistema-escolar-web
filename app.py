@@ -164,6 +164,21 @@ def api_sensor(matricula):
     db["logs_asistencia"].insert_one(dato_iot)
     return f"<h1>🛰️ Capa Edge Activada</h1><p>Dato de {matricula} enviado a la nube.</p>"
 
+@app.route("/mandar_reporte", methods=["POST"])
+def mandar_reporte():
+    matricula = request.form.get("matricula")
+    descripcion = request.form.get("descripcion")
+    
+    if matricula and descripcion:
+        nuevo_reporte = {
+            "matricula": matricula,
+            "descripcion": descripcion,
+            "fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        reportes_col.insert_one(nuevo_reporte)
+        
+    return '<h1>✅ Reporte enviado</h1><a href="/login">Volver al inicio</a>'
+
 # ESTO YA LO TIENES, DÉJALO AL FINAL:
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
