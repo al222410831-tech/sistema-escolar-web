@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Análisis de Datos SIAGE</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #f0f2f5; padding: 30px; }
+        .container { background: white; max-width: 800px; margin: auto; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .btn { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Análisis de Datos en Tiempo Real</h1>
+        <p>Comparativa de actividad: Accesos vs Reportes</p>
+        <canvas id="graficaSIAGE"></canvas>
+        <a href="/login" class="btn">Volver al Menú</a>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('graficaSIAGE').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Accesos (IoT/Web)', 'Reportes Generados'],
+                datasets: [{
+                    label: 'Cantidad de registros en MongoDB',
+                    data: [{{ accesos }}, {{ reportes }}],
+                    backgroundColor: ['#4e73df', '#e74a3b'],
+                    borderWidth: 1
+                }]
+            },
+            options: { scales: { y: { beginAtZero: true } } }
+        });
+    </script>
+</body>
+</html>
