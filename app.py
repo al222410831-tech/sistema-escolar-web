@@ -16,7 +16,8 @@ reportes_col = db["reportes"]
 horarios_col = db["horarios"]
 
 @app.route("/")
-def index(    return render_template("index.html")
+def index():
+    return render_template("index.html")
 
 @app.route("/login")
 def login_page():
