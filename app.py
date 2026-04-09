@@ -179,18 +179,13 @@ def mandar_reporte():
         
     return '<h1>✅ Reporte enviado</h1><a href="/login">Volver al inicio</a>'
 
-# ==========================================
-# AQUÍ VA EL NUEVO CÓDIGO DEL DASHBOARD
-# ==========================================
 @app.route("/dashboard")
 def dashboard():
-    # Esto cuenta los documentos para las gráficas
+    # Cuenta documentos para las gráficas
     total_accesos = db["logs_asistencia"].count_documents({})
     total_reportes = reportes_col.count_documents({})
     
-    # Mandamos los números a la nueva página dashboard.html
     return render_template("dashboard.html", accesos=total_accesos, reportes=total_reportes)
 
-# ESTO SIEMPRE DEBE SER LO ÚLTIMO DEL ARCHIVO
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
