@@ -34,6 +34,16 @@ def validar():
     user = usuarios_col.find_one({"matricula": matricula, "password": password})
     
     if user:
+import datetime
+        log_login = {
+            "nombre": user.get('nombre', 'Usuario'),
+            "rol": user.get('rol', 'Alumno/Maestro'),
+            "evento": "Inicio de Sesión",
+            "gateway": "200.0.0.1",
+            "status": "Online",
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        db["logs_asistencia"].insert_one(log_login)
         if user.get("rol") == "maestro":
             semestre_m = user.get("semestre", "N/A")
             alumnos = list(usuarios_col.find({"rol": "alumno", "semestre": semestre_m}))
@@ -87,7 +97,36 @@ def guardar_usuario():
     else:
         datos.update({"rol": "alumno", "semestre": request.form.get("semestre_alumno")})
     usuarios_col.insert_one(datos)
+# --- RASTREO PARA SPARK (NUEVO REGISTRO) ---
+    import datetime
+    log_registro = {
+        "nombre": datos.get('nombre'),
+        "rol": datos.get('rol'),
+        "evento": "Nuevo Registro",
+        "gateway": "200.0.0.1",
+        "status": "Online",
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    db["logs_asistencia"].insert_one(log_registro)
+    # ------------------------------------------
     return render_template("exito.html", mensaje="Registro exitoso", destino="inicio")
+@app.route("/api/sensor/<matricula>")
+def api_sensor(matricula):
+    import datetime
+    # Guardamos el rastro en la colección logs_asistencia
+    dato_iot = {
+        "matricula": matricula,
+        "evento": "Captura_RFID_Edge",
+        "gateway": "200.0.0.1",
+        "protocolo": "SSL/TLS",
+        "status": "Persistido_Atlas",
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    db["logs_asistencia"].insert_one(dato_iot)
+    return f"<h1>🛰️ Capa Edge Activada</h1><p>Dato de {matricula} enviado a la nube.</p>"
 
+# ESTO YA LO TIENES, DÉJALO AL FINAL:
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
