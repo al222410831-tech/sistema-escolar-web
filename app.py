@@ -168,7 +168,6 @@ def api_sensor(matricula):
 def mandar_reporte():
     matricula = request.form.get("matricula")
     descripcion = request.form.get("descripcion")
-    
     if matricula and descripcion:
         nuevo_reporte = {
             "matricula": matricula,
@@ -176,15 +175,12 @@ def mandar_reporte():
             "fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         reportes_col.insert_one(nuevo_reporte)
-        
     return '<h1>✅ Reporte enviado</h1><a href="/login">Volver al inicio</a>'
 
 @app.route("/dashboard")
 def dashboard():
-    # Cuenta documentos para las gráficas
     total_accesos = db["logs_asistencia"].count_documents({})
     total_reportes = reportes_col.count_documents({})
-    
     return render_template("dashboard.html", accesos=total_accesos, reportes=total_reportes)
 
 if __name__ == "__main__":
