@@ -26,13 +26,16 @@ def login_page():
 def registro_page():
     return render_template("registro.html")
 
-@app.route("/validar", methods=["POST"])@app.route("/validar", methods=["POST"])
+@app.route('/validar', methods=['POST'])
 def validar():
-    matricula = request.form.get("usuario")
-    password = request.form.get("password")
-    user = usuarios_col.find_one({"matricula": matricula, "password": password})
+    matricula = request.form.get('matricula')
+    password = request.form.get('password')
     
-if user:
+    # Buscamos al usuario en la base de datos
+    user = usuarios_col.find_one({'matricula': matricula, 'password': password})
+
+    if user:
+        # --- BLOQUE DE AUTOMATIZACIÓN PARA SPARK ---
         import datetime
         log_login = {
             "matricula": user.get('matricula'),
@@ -43,20 +46,28 @@ if user:
             "status": "Online",
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
+        # Guardamos en la colección que vigila el monitor_iot.py
         db["logs_asistencia"].insert_one(log_login)
+        # --------------------------------------------
 
-        # Aquí sigue tu lógica normal de redirección
+        # Lógica para redireccionar según el rol
         if user.get("rol") == "maestro":
-            semestre_m = user.get("semestre", "N/A")
-            alumnos = list(usuarios_col.find({"rol": "alumno", "semestre": semestre_m}))
+            semestre_n = user.get("semestre", "N/A")
+            alumnos = list(usuarios_col.find({"rol": "alumno", "semestre": semestre_n}))
             return render_template("menu_maestro.html", user=user, alumnos=alumnos, horarios_col=horarios_col)
-        else:
+        
+        elif user.get("rol") == "alumno":
             notas = list(calif_col.find({"matricula": matricula}))
             reps = list(reportes_col.find({"matricula": matricula}))
             return render_template("menu_alumno.html", user=user, notas=notas, reportes=reps, horarios_col=horarios_col)
         
-    return "<h1>❌ Datos incorrectos</h1><a href='/login'>Volver</a>"
-def validar():
+        else:
+            # Por si tienes algún otro rol como admin
+            return render_template("menu_alumno.html", user=user)
+
+    # Si los datos son incorrectos
+    return '<h1>❌ Datos incorrectos</h1><p>Matrícula o contraseña no válidos.</p><a href="/login">Volver a intentar</a>'def validar():
+
     matricula = request.form.get("usuario")
     password = request.form.get("password")
     user = usuarios_col.find_one({"matricula": matricula, "password": password})
@@ -154,7 +165,5 @@ def api_sensor(matricula):
     return f"<h1>🛰️ Capa Edge Activada</h1><p>Dato de {matricula} enviado a la nube.</p>"
 
 # ESTO YA LO TIENES, DÉJALO AL FINAL:
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
