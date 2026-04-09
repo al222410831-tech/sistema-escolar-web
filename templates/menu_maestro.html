@@ -20,8 +20,10 @@
 <body>
     <div class="card">
         <h2>👨‍🏫 PANEL DE CONTROL MAESTRO</h2>
+        
         <button onclick="ver('sec_calif')">📊 CALIFICAR</button>
         <button onclick="ver('sec_horario')">📅 HORARIOS SEMANALES</button>
+        <button onclick="ver('sec_reportes')" style="background:#e67e22; color:white;">📝 REPORTES Y ANÁLISIS</button>
         <a href="/"><button style="background:red; color:white;">SALIR</button></a>
 
         <div id="sec_calif" class="sec">
@@ -78,6 +80,32 @@
                 <button type="submit" style="width:100%; background:blue; color:white; padding:15px; margin-top:10px;">GUARDAR HORARIO SEMANAL</button>
             </form>
         </div>
-    </div>
-</body>
+
+        <div id="sec_reportes" class="sec">
+            <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; border: 2px solid #333; margin-top:15px; color: #333;">
+                <h3 style="margin-top:0;">📝 Enviar Reporte a Alumno</h3>
+                <form action="/mandar_reporte" method="POST">
+                    <input type="text" name="matricula" placeholder="Matrícula del alumno" required 
+                           style="width: 95%; padding: 10px; margin-bottom: 10px; border: 1px solid #333; border-radius: 5px;">
+                    <textarea name="descripcion" placeholder="Describa la situación del alumno..." required 
+                              style="width: 95%; height: 80px; border: 1px solid #333; border-radius: 5px; padding: 10px;"></textarea>
+                    <br>
+                    <button type="submit" style="background:#dc3545; color:white; width: 100%; padding: 12px; font-size: 16px;">
+                        ENVIAR REPORTE OFICIAL
+                    </button>
+                </form>
+                
+                <hr style="border: 1px dashed #333; margin: 25px 0;">
+                
+                <h3>📊 Análisis de Datos SIAGE</h3>
+                <p style="font-size: 13px;">Visualización de métricas de asistencia y reportes en tiempo real.</p>
+                <a href="/dashboard">
+                    <button type="button" style="background:#17a2b8; color:white; width: 100%; padding: 12px; font-size: 16px;">
+                        ABRIR DASHBOARD DE GRÁFICAS
+                    </button>
+                </a>
+            </div>
+        </div>
+
+    </div> </body>
 </html>
